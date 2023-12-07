@@ -44,6 +44,11 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public List<UserDto> viewAll() {
+        return UserMapper.userMapper.mapToUserDtoList(userRepo.findAllByDeletedIsFalse());
+    }
+
+    @Override
     public int updateUser(long userId, User user) {
         User updatedUser = userRepo.findByUserIdAndDeletedIsFalse(userId);
         if (updatedUser == null) return 3; // user not found
@@ -83,4 +88,43 @@ public class UserServiceImpl implements UserService
             return 0; // deleted
         }
     }
+
+    @Override
+    public String authenticateUser(String email, String password) {
+        return userRepo.authenticateUser(email, password);
+    }
+
+    //    public int saveUser(User user, String filePath)
+//    {
+//        if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
+//        {
+//            if(userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null)
+//            {
+//                user.setProfilePhoto(filePath);
+//                userRepo.save(user);
+//                return 0; // saved
+//            }
+//            else return 1; // duplicate email
+//        } else return 2; // invalid email
+//    }
+
+//    @Override
+//    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
+//        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart";
+//
+//        File uploadDirFile = new File(uploadDir);
+//        if (!uploadDirFile.exists()) {
+//            uploadDirFile.mkdirs();
+//        }
+//
+//        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
+//
+//
+//        Path filePath = Paths.get(uploadDir, fileName);
+//        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//        // Return the file path
+//        return "/uploads/" + fileName; // Adjust the path based on your setup
+//    }
 }
+

@@ -68,6 +68,16 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @GetMapping("/viewAll")
+    public ResponseEntity<Object> viewAll() {
+        if(!userService.viewAll().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+
+    }
+
+    @Override
     @PutMapping("/update/{userId}")
     public ResponseEntity<Object> updateUser(User user, Long userId) {
         try
@@ -125,4 +135,48 @@ public class UserControllerImpl implements UserController{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "An error occurred while deleting the user"));
         }
     }
+
+    @Override
+    @PostMapping("/authenticate")
+    public ResponseEntity<Object> authenticateUser(String email, String password) {
+        String role = userService.authenticateUser(email, password);
+        if (role != null) {
+            logger.info("Authenticated as "+ role +" successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ role +" successfully", role));
+        }
+        else{
+            logger.info("Incorrect email or password");
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Incorrect email or password", ""));
+        }
+    }
 }
+
+
+//    public ResponseEntity<Object> createUser(@RequestParam("profilePhoto") MultipartFile profilePhoto, @ModelAttribute User user)
+//    {
+//        try
+//        {
+//            String filePath = userService.saveProfilePhoto(profilePhoto);
+//            if(userService.saveUser(user, filePath) == 0)
+//            {
+//                logger.info("User account created successfully");
+//                return ResponseEntity.status(HttpStatus.OK)
+//                        .body(convertToResponseItemDto("200 OK", "User account created",userService.viewUser(user.getUserId())));
+//            }
+//            else if(userService.saveUser(user, filePath) == 1)
+//            {
+//                logger.info("Duplicate email found");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
+//            }
+//            else
+//            {
+//                logger.info("Invalid email");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            logger.error("Failed to create the user account");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
+//        }
+//    }

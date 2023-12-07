@@ -21,7 +21,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private Integer contactNo;
+    private String contactNo;
 
     @Column(nullable = false)
     private String address;
