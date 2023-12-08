@@ -1,6 +1,5 @@
 package com.emart.emart.services.user;
 
-import com.emart.emart.controllers.user.UserControllerImpl;
 import com.emart.emart.dtos.UserDto;
 import com.emart.emart.mappers.UserMapper;
 import com.emart.emart.models.User;

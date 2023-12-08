@@ -16,8 +16,8 @@ public class Product {
     @Column(nullable = false)
     private String productName;
 
-    @Column(nullable = false)
-    private String productCode;
+    @Column(nullable = false, unique = true)
+    private String productCode; // eg: #100234
 
     @Column(nullable = false)
     private String description;
