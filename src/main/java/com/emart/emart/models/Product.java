@@ -40,8 +40,8 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @ElementCollection
-    private List<String> productImages;
+//    @ElementCollection
+//    private List<String> productImages;
 
     @Column
     private Boolean deleted = false;

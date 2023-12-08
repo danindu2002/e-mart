@@ -2,6 +2,7 @@ server:
   port: 8082
 
 spring:
+
   datasource:
     url: jdbc:mysql://localhost:3306/e_mart?createDatabaseIfNotExist=true
     username: root

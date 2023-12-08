@@ -1,6 +1,7 @@
 package com.emart.emart.controllers.user;
 
 import com.emart.emart.models.User;
+import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ public class UserControllerImpl implements UserController{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepo userRepo;
 
     @Override
     @PostMapping("/create")
@@ -51,7 +54,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping("/search")
-    public ResponseEntity<Object> searchUser(String keyword, String role) {
+    public ResponseEntity<Object> searchUser(String keyword, Long role) {
         if(!userService.searchUser(keyword, role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.searchUser(keyword, role)));
         }
@@ -60,7 +63,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @GetMapping("/viewAll/{role}")
-    public ResponseEntity<Object> viewAllUsers(String role) {
+    public ResponseEntity<Object> viewAllUsers(Long role) {
         if(!userService.viewAllUsers(role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.viewAllUsers(role)));
         }
@@ -78,22 +81,22 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<Object> updateUser(User user, Long userId) {
+    @PutMapping("/update/{userId}/{changePwd}")
+    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd) {
         try
         {
-            if(userService.updateUser(userId, user) == 0)
+            if(userService.updateUser(userId, user, changePwd) == 0)
             {
                 logger.info("User updated successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "user updated successfully",
                         userService.viewUser(userId)));
             }
-            else if(userService.updateUser(userId, user) == 1)
+            else if(userService.updateUser(userId, user, changePwd) == 1)
             {
                 logger.info("Duplicate email found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
             }
-            else if (userService.updateUser(userId, user) == 2)
+            else if (userService.updateUser(userId, user, changePwd) == 2)
             {
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
@@ -140,13 +143,19 @@ public class UserControllerImpl implements UserController{
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticateUser(String email, String password) {
         String role = userService.authenticateUser(email, password);
-        if (role != null) {
-            logger.info("Authenticated as "+ role +" successfully");
-            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ role +" successfully", role));
+        if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
+            if (role != null) {
+                logger.info("Authenticated as "+ role +" successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ role +" successfully", role));
+            }
+            else{
+                logger.info("Incorrect credentials");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseItemDto("404 Not Found", "Incorrect credentials", ""));
+            }
         }
-        else{
-            logger.info("Incorrect email or password");
-            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Incorrect email or password", ""));
+        else {
+            logger.info("User not found, Incorrect email");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User not found, Incorrect email"));
         }
     }
 }

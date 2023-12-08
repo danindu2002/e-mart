@@ -12,10 +12,10 @@ public interface UserService {
 //    int saveUser(User user, String filePath);
     int saveUser(User user);
     UserDto viewUser(Long userId);
-    List<UserDto> searchUser(String keyword, String role);
-    List<UserDto> viewAllUsers(String role);
+    List<UserDto> searchUser(String keyword, Long role);
+    List<UserDto> viewAllUsers(Long role);
     List<UserDto> viewAll();
-    int updateUser(long userId, User user);
+    int updateUser(long userId, User user, Boolean changePwd);
     int deleteUser(long userId);
     String authenticateUser(String email, String password);
 //    String saveProfilePhoto(MultipartFile profilePhoto) throws IOException;

@@ -6,7 +6,7 @@ import com.emart.emart.models.Product;
 import java.util.List;
 
 public interface ProductService {
-    int saveProduct(Product product);
+    void saveProduct(Product product);
     ProductDto viewProduct(Long productId);
     List<ProductDto> viewAllProducts();
     List<ProductDto> searchProducts(String keyword);

@@ -1,26 +1,32 @@
 package com.emart.emart.services.product;
 
 import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.mappers.ProductMapper;
 import com.emart.emart.models.Product;
+import com.emart.emart.repositories.ProductRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService{
+    @Autowired
+    ProductRepo productRepo;
+
     @Override
-    public int saveProduct(Product product) {
-        return 0;
+    public void saveProduct(Product product) {
+        productRepo.save(product);
     }
 
     @Override
     public ProductDto viewProduct(Long productId) {
-        return null;
+        return ProductMapper.productMapper.mapToProductDto(productRepo.findByProductIdAndDeletedIsFalse(productId));
     }
 
     @Override
     public List<ProductDto> viewAllProducts() {
-        return null;
+        return ProductMapper.productMapper.maptoProductDtoList(productRepo.findAllByDeletedIsFalse());
     }
 
     @Override
