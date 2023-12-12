@@ -2,16 +2,13 @@ package com.emart.emart.controllers.user;
 
 import com.emart.emart.models.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserController {
 
-    //    ResponseEntity<Object> createUser(@RequestParam("profilePhoto") MultipartFile profilePhoto, @ModelAttribute User user);
-    ResponseEntity<Object> createUser(@RequestBody User user);
+    ResponseEntity<Object> createUser(@RequestPart User user, @RequestPart MultipartFile profilePhoto);
+//    ResponseEntity<Object> createUser(@RequestBody User user);
     ResponseEntity<Object> searchUser(@RequestParam String keyword, @RequestParam Long role);
     ResponseEntity<Object> viewById(@PathVariable Long userId);
     ResponseEntity<Object> viewAllUsers(@PathVariable Long role);

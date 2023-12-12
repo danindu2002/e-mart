@@ -10,6 +10,7 @@ public interface ProductService {
     ProductDto viewProduct(Long productId);
     List<ProductDto> viewAllProducts();
     List<ProductDto> searchProducts(String keyword);
+//    List<ProductDto> searchProductsByFilters(String category, Double minPrice, Double maxPrice);
     List<ProductDto> searchByPrice(Double minPrice, Double maxPrice);
     List<ProductDto> searchByCategory(String category);
     List<ProductDto> searchByPriceAndCategory(String category, Double minPrice, Double maxPrice);

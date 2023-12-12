@@ -48,6 +48,13 @@ public class ProductServiceImpl implements ProductService
         return ProductMapper.productMapper.maptoProductDtoList(productRepo.search(keyword));
     }
 
+//    @Override
+//    public List<ProductDto> searchProductsByFilters(String category, Double minPrice, Double maxPrice) {
+//        String categoryName = refCategoryRepo.findByRefCategoryId(Long.valueOf(category)).getRefCategoryName();
+//        logger.info("products searched by filters");
+//        return ProductMapper.productMapper.maptoProductDtoList(productRepo.findByPriceAndCategory(minPrice, maxPrice, categoryName));
+//    }
+
     @Override
     public List<ProductDto> searchByPrice(Double minPrice, Double maxPrice) {
         logger.info("products searched by price");
@@ -67,6 +74,7 @@ public class ProductServiceImpl implements ProductService
         logger.info("products searched by price and category");
         return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByPriceAndCategory(minPrice, maxPrice, categoryName));
     }
+
 
     @Override
     public int updateProduct(Long productId, Product product) {

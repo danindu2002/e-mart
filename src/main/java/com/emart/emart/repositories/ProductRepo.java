@@ -26,4 +26,15 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     Product findByProductCodeAndDeletedIsFalse(String productCode);
     List<Product> findAllByDeletedIsFalse();
 
+//    List<Product> findByPriceGreaterThanEqualAndPriceLessThanEqualAndCategoryContainingAndDeletedIsFalse(Double minPrice, Double maxPrice, String category);
+//
+//    @Query("SELECT p FROM Product p WHERE (:minPrice IS NULL OR p.price >= :minPrice) " +
+//            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+//            "AND (:category IS NULL OR LOWER(p.category) LIKE LOWER(CONCAT('%', :category, '%'))) " +
+//            "AND p.deleted = false")
+//    List<Product> findByPriceAndCategory(
+//            @Param("minPrice") Double minPrice,
+//            @Param("maxPrice") Double maxPrice,
+//            @Param("category") String category
+//    );
 }

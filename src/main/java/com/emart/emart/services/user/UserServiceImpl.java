@@ -10,9 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -27,25 +35,32 @@ public class UserServiceImpl implements UserService
     private AESConverter aesConverter;
 
     @Override
-    public int saveUser(User user) {
-        if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
-        {
-            if(userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null)
+    public int saveUser(User user, MultipartFile profilePhoto) {
+        try{
+            if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
             {
-                user.setRole(refRoleRepo.findRefRoleByRefRoleId(Long.parseLong(user.getRole())).getRefRoleName());
-                user.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
-                userRepo.save(user);
-                logger.info("user saved");
-                return 0;
+                if(userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null)
+                {
+                    user.setRole(refRoleRepo.findRefRoleByRefRoleId(Long.parseLong(user.getRole())).getRefRoleName());
+                    user.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
+                    user.setProfilePhoto(saveProfilePhoto(profilePhoto));
+                    userRepo.save(user);
+                    logger.info("user saved");
+                    return 0;
+                }
+                else {
+                    logger.info("duplicate email found");
+                    return 1;
+                }
+            } else {
+                logger.info("invalid email");
+                return 2;
             }
-            else {
-                logger.info("duplicate email found");
-                return 1;
-            }
-        } else {
-            logger.info("invalid email");
-            return 2;
         }
+        catch (Exception e) {
+            return 3;
+        }
+
     }
 
     @Override
@@ -131,47 +146,31 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public String authenticateUser(String email, String password) {
+    public User authenticateUser(String email, String password) {
         User user = userRepo.findByEmailAndDeletedIsFalse(email);
         String enteredPassword = aesConverter.convertToEntityAttribute(user.getPassword());
         if (password.equals(enteredPassword)) {
             logger.info("user authenticated");
-            return user.getRole();
+            return user;
         }
         return null;
     }
 
-    //    public int saveUser(User user, String filePath)
-//    {
-//        if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
-//        {
-//            if(userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null)
-//            {
-//                user.setProfilePhoto(filePath);
-//                userRepo.save(user);
-//                return 0; // saved
-//            }
-//            else return 1; // duplicate email
-//        } else return 2; // invalid email
-//    }
+    @Override
+    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
+        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart/img";
 
-//    @Override
-//    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
-//        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart";
-//
-//        File uploadDirFile = new File(uploadDir);
-//        if (!uploadDirFile.exists()) {
-//            uploadDirFile.mkdirs();
-//        }
-//
-//        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
-//
-//
-//        Path filePath = Paths.get(uploadDir, fileName);
-//        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//        // Return the file path
-//        return "/uploads/" + fileName; // Adjust the path based on your setup
-//    }
+        File uploadDirFile = new File(uploadDir);
+        if (!uploadDirFile.exists()) {
+            uploadDirFile.mkdirs();
+        }
+
+        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
+
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/prfilePhotos/" + fileName;
+    }
 }
 

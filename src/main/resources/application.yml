@@ -17,3 +17,4 @@ spring:
         format_sql: false
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
+

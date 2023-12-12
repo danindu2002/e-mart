@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.emart.emart.utility.Utility.*;
 
@@ -25,34 +26,56 @@ public class UserControllerImpl implements UserController{
     private UserRepo userRepo;
 
     @Override
+//    @PostMapping("/create")
+//    public ResponseEntity<Object> createUser(@RequestBody User user) {
+//        try
+//        {
+//            if(userService.saveUser(user) == 0)
+//            {
+//                logger.info("User account created successfully");
+//                return ResponseEntity.status(HttpStatus.OK)
+//                        .body(convertToResponseItemDto("200 OK", "User account created",userService.viewUser(user.getUserId())));
+//            }
+//            else if(userService.saveUser(user) == 1)
+//            {
+//                logger.info("Duplicate email found");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
+//            }
+//            else
+//            {
+//                logger.info("Invalid email");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            logger.error("Failed to create the user account", e);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
+//        }
+//    }
+
+
     @PostMapping("/create")
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
-        try
-        {
-            if(userService.saveUser(user) == 0)
-            {
+    public ResponseEntity<Object> createUser(
+            @RequestPart("user") User user,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
+        try {
+            if (userService.saveUser(user, profilePhoto) == 0) {
                 logger.info("User account created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseItemDto("200 OK", "User account created",userService.viewUser(user.getUserId())));
-            }
-            else if(userService.saveUser(user) == 1)
-            {
+                        .body(convertToResponseItemDto("200 OK", "User account created", userService.viewUser(user.getUserId())));
+            } else if (userService.saveUser(user, profilePhoto) == 1) {
                 logger.info("Duplicate email found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-            }
-            else
-            {
+            } else {
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Failed to create the user account", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
         }
     }
-
     @Override
     @GetMapping("/search")
     public ResponseEntity<Object> searchUser(String keyword, Long role) {
@@ -152,11 +175,11 @@ public class UserControllerImpl implements UserController{
     @Override
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticateUser(String email, String password) {
-        String role = userService.authenticateUser(email, password);
+        User user = userService.authenticateUser(email, password);
         if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
-            if (role != null) {
-                logger.info("Authenticated as "+ role +" successfully");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ role +" successfully", role));
+            if (user != null) {
+                logger.info("Authenticated as "+ user.getRole() +" successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", user));
             }
             else{
                 logger.info("Incorrect credentials");
