@@ -1,4 +1,4 @@
-package com.emart.emart.models;
+package com.emart.emart.models.ref;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,5 +11,6 @@ public class RefCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refCategoryId;
 
+    @Column(nullable = false, unique = true)
     private String refCategoryName;
 }

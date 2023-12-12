@@ -4,13 +4,14 @@ import com.emart.emart.dtos.ProductDto;
 import com.emart.emart.mappers.ProductMapper;
 import com.emart.emart.models.Product;
 import com.emart.emart.repositories.ProductRepo;
-import com.emart.emart.repositories.RefCategoryRepo;
+import com.emart.emart.repositories.ref.RefCategoryRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductServiceImpl implements ProductService
@@ -55,14 +56,16 @@ public class ProductServiceImpl implements ProductService
 
     @Override
     public List<ProductDto> searchByCategory(String category) {
+        String categoryName = refCategoryRepo.findByRefCategoryId(Long.valueOf(category)).getRefCategoryName();
         logger.info("products searched by category");
-        return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByCategoryAndDeletedIsFalse(category));
+        return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByCategoryAndDeletedIsFalse(categoryName));
     }
 
     @Override
     public List<ProductDto> searchByPriceAndCategory(String category, Double minPrice, Double maxPrice) {
+        String categoryName = refCategoryRepo.findByRefCategoryId(Long.valueOf(category)).getRefCategoryName();
         logger.info("products searched by price and category");
-        return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByPriceAndCategory(minPrice, maxPrice, category));
+        return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByPriceAndCategory(minPrice, maxPrice, categoryName));
     }
 
     @Override
@@ -74,9 +77,8 @@ public class ProductServiceImpl implements ProductService
         }
         else{
             Product product1 = productRepo.findByProductCodeAndDeletedIsFalse(product.getProductCode());
-            if(product1 == null || product1.getProductId() == productId)
+            if(product1 == null || Objects.equals(product1.getProductId(), productId))
             {
-                updatedProduct.setProductId(product.getProductId());
                 updatedProduct.setProductName(product.getProductName());
                 updatedProduct.setProductCode(product.getProductCode());
                 updatedProduct.setDescription(product.getDescription());
@@ -86,6 +88,7 @@ public class ProductServiceImpl implements ProductService
                 updatedProduct.setSize(product.getSize());
                 updatedProduct.setColor(product.getColor());
                 updatedProduct.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
+                productRepo.save(updatedProduct);
 
                 logger.info("product updated");
                 return 0;

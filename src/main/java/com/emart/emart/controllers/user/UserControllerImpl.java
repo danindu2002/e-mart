@@ -1,5 +1,6 @@
 package com.emart.emart.controllers.user;
 
+import com.emart.emart.dtos.UserDto;
 import com.emart.emart.models.User;
 import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.user.UserService;
@@ -62,6 +63,16 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
+    @GetMapping("/view/{userId}")
+    public ResponseEntity<Object> viewById(Long userId) {
+        UserDto user = userService.viewUser(userId);
+        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "User found", user));
+        }
+    }
+
+    @Override
     @GetMapping("/viewAll/{role}")
     public ResponseEntity<Object> viewAllUsers(Long role) {
         if(!userService.viewAllUsers(role).isEmpty()) {
@@ -77,7 +88,6 @@ public class UserControllerImpl implements UserController{
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
-
     }
 
     @Override

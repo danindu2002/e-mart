@@ -1,6 +1,8 @@
 package com.emart.emart.controllers.product;
 
 import com.emart.emart.controllers.user.UserControllerImpl;
+import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.dtos.UserDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.services.product.ProductService;
@@ -11,8 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.emart.emart.utility.Utility.convertToResponseItemDto;
-import static com.emart.emart.utility.Utility.convertToResponseMsgDto;
+import static com.emart.emart.utility.Utility.*;
 
 @RestController
 @CrossOrigin
@@ -35,44 +36,111 @@ public class ProductControllerImpl implements ProductController{
         }
         catch (Exception e)
         {
-            logger.error("Failed to create the product");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the product"));
+            logger.error("Duplicate product code found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplicate product code found"));
         }
     }
 
     @Override
     @GetMapping("/viewAll")
     public ResponseEntity<Object> viewAllProducts() {
-        return null;
+        if(!productService.viewAllProducts().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All products found", productService.viewAllProducts()));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
     }
 
     @Override
+    @GetMapping("/view/{productId}")
+    public ResponseEntity<Object> viewById(Long productId) {
+        ProductDto product = productService.viewProduct(productId);
+        if (product == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product found", product));
+        }
+    }
+
+    @Override
+    @GetMapping("/search/{keyword}")
     public ResponseEntity<Object> searchProducts(String keyword) {
-        return null;
+        if(!productService.searchProducts(keyword).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchProducts(keyword)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
     }
 
     @Override
+    @GetMapping("/searchPrice")
     public ResponseEntity<Object> searchByPrice(Double minPrice, Double maxPrice) {
-        return null;
+        if(!productService.searchByPrice(minPrice, maxPrice).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPrice(minPrice, maxPrice)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
     }
 
     @Override
+    @GetMapping("/searchCategory/{category}")
     public ResponseEntity<Object> searchByCategory(String category) {
-        return null;
+        if(!productService.searchByCategory(category).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByCategory(category)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
     }
 
     @Override
+    @GetMapping("/searchBoth")
     public ResponseEntity<Object> searchByPriceAndCategory(Double minPrice, Double maxPrice, String category) {
-        return null;
+        if(!productService.searchByPriceAndCategory(category, minPrice, maxPrice).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPriceAndCategory(category, minPrice, maxPrice)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
     }
 
     @Override
+    @PutMapping("/update/{productId}")
     public ResponseEntity<Object> updateProduct(Long productId, Product product) {
-        return null;
+        try
+        {
+            if(productService.updateProduct(productId, product) == 0)
+            {
+                logger.info("Product updated successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product updated successfully",
+                        productService.viewProduct(productId)));
+            }
+            else if(productService.updateProduct(productId, product) == 1)
+            {
+                logger.info("Duplicate product code found");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate product code found, please try again"));
+            }
+            else throw new Exception();
+        }
+        catch (Exception e)
+        {
+            logger.error("Product not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+        }
     }
 
     @Override
+    @DeleteMapping("/delete/{productId}")
     public ResponseEntity<Object> deleteProduct(Long productId) {
-        return null;
+        try
+        {
+            if (productService.deleteProduct(productId) == 0)
+            {
+                logger.info("Product deleted");
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Product with the ID : " + productId + " deleted successfully"));
+            }
+            else
+            {
+                logger.error("Product not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("An error occurred while deleting the product");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "An error occurred while deleting the product"));
+        }
     }
 }

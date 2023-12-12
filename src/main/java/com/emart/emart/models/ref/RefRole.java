@@ -1,4 +1,4 @@
-package com.emart.emart.models;
+package com.emart.emart.models.ref;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,6 +11,7 @@ public class RefRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refRoleId;
 
+    @Column(nullable = false, unique = true)
     private String refRoleName;
 
 }

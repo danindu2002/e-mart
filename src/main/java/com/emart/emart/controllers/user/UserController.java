@@ -13,6 +13,7 @@ public interface UserController {
     //    ResponseEntity<Object> createUser(@RequestParam("profilePhoto") MultipartFile profilePhoto, @ModelAttribute User user);
     ResponseEntity<Object> createUser(@RequestBody User user);
     ResponseEntity<Object> searchUser(@RequestParam String keyword, @RequestParam Long role);
+    ResponseEntity<Object> viewById(@PathVariable Long userId);
     ResponseEntity<Object> viewAllUsers(@PathVariable Long role);
     ResponseEntity<Object> viewAll();
     ResponseEntity<Object> updateUser(@RequestBody User user, @PathVariable Long userId, @PathVariable Boolean changePwd);

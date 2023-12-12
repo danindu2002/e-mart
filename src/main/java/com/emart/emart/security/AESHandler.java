@@ -9,7 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Component
 public class AESHandler {
 
-    private static final String SECRET_KEY = "mySecretKey1234567890000"; // 256-bit key
+    private static final String SECRET_KEY = "mySecretKey1234567890000";
 
     public String encrypt(String plaintext) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
