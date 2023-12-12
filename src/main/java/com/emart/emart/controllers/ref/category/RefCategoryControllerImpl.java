@@ -34,7 +34,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
         }
         catch (Exception e)
         {
-            logger.error("Duplcate category name found", e);
+            logger.error("Duplicate category name found", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplcate category name found"));
         }
     }

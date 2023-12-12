@@ -48,7 +48,7 @@ public class UserControllerImpl implements UserController{
         }
         catch (Exception e)
         {
-            logger.error("Failed to create the user account");
+            logger.error("Failed to create the user account", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
         }
     }

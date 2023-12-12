@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -132,7 +133,8 @@ public class UserServiceImpl implements UserService
     @Override
     public String authenticateUser(String email, String password) {
         User user = userRepo.findByEmailAndDeletedIsFalse(email);
-        if (user != null && password.equals(aesConverter.convertToEntityAttribute(user.getPassword()))) {
+        String enteredPassword = aesConverter.convertToEntityAttribute(user.getPassword());
+        if (password.equals(enteredPassword)) {
             logger.info("user authenticated");
             return user.getRole();
         }
