@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CartDto {
+public class CheckoutDto {
     private Long cartId;
     private List<ProductDto> productDtoList;
     private User user;

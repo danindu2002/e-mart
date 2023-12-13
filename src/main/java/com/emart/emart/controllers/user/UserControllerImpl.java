@@ -1,6 +1,7 @@
 package com.emart.emart.controllers.user;
 
 import com.emart.emart.dtos.UserDto;
+import com.emart.emart.mappers.UserMapper;
 import com.emart.emart.models.User;
 import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.user.UserService;
@@ -56,9 +57,7 @@ public class UserControllerImpl implements UserController{
 
 
     @PostMapping("/")
-    public ResponseEntity<Object> createUser(
-            @RequestPart("user") User user,
-            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
+    public ResponseEntity<Object> createUser(@RequestBody User user) {
         try {
             if (userService.saveUser(user) == 0) {
                 logger.info("User account created successfully");
@@ -115,7 +114,7 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PutMapping("/{userId}/{changePwd}")
-    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd, MultipartFile profilePhoto)
+    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd)
     {
         try {
             if (userService.updateUser(userId, user, changePwd) == 0) {
@@ -206,7 +205,7 @@ public class UserControllerImpl implements UserController{
         if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
             if (user != null) {
                 logger.info("Authenticated as "+ user.getRole() +" successfully");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", user));
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", UserMapper.userMapper.mapToUserDto(user)));
             }
             else {
                 logger.info("Incorrect credentials");

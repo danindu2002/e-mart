@@ -43,6 +43,9 @@ public class Product {
     @Column
     private Integer noOfItems = 0; // no of items added to the cart
 
+    @Column
+    private Double subTotal = 0.0; // subtotal = price * noOfItems
+
 //    @ElementCollection
 //    private List<String> productImages;
 
