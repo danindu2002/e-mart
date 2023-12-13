@@ -15,7 +15,7 @@ public interface UserService {
     List<UserDto> searchUser(String keyword, Long role);
     List<UserDto> viewAllUsers(Long role);
     List<UserDto> viewAll();
-    int updateUser(long userId, User user, Boolean changePwd);
+    int updateUser(long userId, User user, Boolean changePwd, MultipartFile profilePhoto) throws IOException;
     int deleteUser(long userId);
     User authenticateUser(String email, String password);
     String saveProfilePhoto(MultipartFile profilePhoto) throws IOException;

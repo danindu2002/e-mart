@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public int updateUser(long userId, User user, Boolean changePwd) {
+    public int updateUser(long userId, User user, Boolean changePwd, MultipartFile profilePhoto) throws IOException {
         User updatedUser = userRepo.findByUserIdAndDeletedIsFalse(userId);
         if (updatedUser == null) {
             logger.info("User not found");
@@ -109,7 +108,7 @@ public class UserServiceImpl implements UserService
                     updatedUser.setContactNo(user.getContactNo());
                     updatedUser.setAddress(user.getAddress());
                     if (changePwd) updatedUser.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
-                    if (user.getProfilePhoto() != null) updatedUser.setProfilePhoto(user.getProfilePhoto());
+                    if (user.getProfilePhoto() != null)user.setProfilePhoto(saveProfilePhoto(profilePhoto));
                     userRepo.save(updatedUser);
 
                     logger.info("User updated");

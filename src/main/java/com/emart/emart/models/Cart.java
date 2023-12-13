@@ -13,9 +13,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cartId;
 
-    private Integer noOfItems;
-    private Double subTotal;
+//    private Integer noOfItems;
+//    private Double subTotal;
 
     @ManyToMany
     private List<Product> productList;
+
+    @ManyToOne
+    private User user;
 }

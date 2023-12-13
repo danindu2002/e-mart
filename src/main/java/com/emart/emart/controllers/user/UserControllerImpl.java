@@ -115,33 +115,60 @@ public class UserControllerImpl implements UserController{
 
     @Override
     @PutMapping("/update/{userId}/{changePwd}")
-    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd) {
-        try
-        {
-            if(userService.updateUser(userId, user, changePwd) == 0)
-            {
+    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd, MultipartFile profilePhoto)
+    {
+        try {
+            if (userService.updateUser(userId, user, changePwd, profilePhoto) == 0) {
                 logger.info("User updated successfully");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "user updated successfully",
-                        userService.viewUser(userId)));
-            }
-            else if(userService.updateUser(userId, user, changePwd) == 1)
-            {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(convertToResponseItemDto("200 OK", "User updated successfully", userService.viewUser(userId)));
+            } else if (userService.updateUser(userId, user, changePwd, profilePhoto) == 1) {
                 logger.info("Duplicate email found");
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-            }
-            else if (userService.updateUser(userId, user, changePwd) == 2)
-            {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
+            } else if (userService.updateUser(userId, user, changePwd, profilePhoto) == 2) {
                 logger.info("Invalid email");
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
+            } else {
+                throw new Exception();
             }
-            else throw new Exception();
-        }
-        catch (Exception e)
-        {
-            logger.error("User account not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User account not found"));
+        } catch (Exception e) {
+            logger.error("User account not found", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(convertToResponseMsgDto("404 Not Found", "User account not found"));
         }
     }
+
+//    @Override
+//    @PutMapping("/update/{userId}/{changePwd}")
+//    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd) {
+//        try
+//        {
+//            if(userService.updateUser(userId, user, changePwd) == 0)
+//            {
+//                logger.info("User updated successfully");
+//                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "user updated successfully",
+//                        userService.viewUser(userId)));
+//            }
+//            else if(userService.updateUser(userId, user, changePwd) == 1)
+//            {
+//                logger.info("Duplicate email found");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
+//            }
+//            else if (userService.updateUser(userId, user, changePwd) == 2)
+//            {
+//                logger.info("Invalid email");
+//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
+//            }
+//            else throw new Exception();
+//        }
+//        catch (Exception e)
+//        {
+//            logger.error("User account not found");
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User account not found"));
+//        }
+//    }
 
     @Override
     @DeleteMapping("/delete/{userId}")
@@ -192,33 +219,3 @@ public class UserControllerImpl implements UserController{
         }
     }
 }
-
-
-//    public ResponseEntity<Object> createUser(@RequestParam("profilePhoto") MultipartFile profilePhoto, @ModelAttribute User user)
-//    {
-//        try
-//        {
-//            String filePath = userService.saveProfilePhoto(profilePhoto);
-//            if(userService.saveUser(user, filePath) == 0)
-//            {
-//                logger.info("User account created successfully");
-//                return ResponseEntity.status(HttpStatus.OK)
-//                        .body(convertToResponseItemDto("200 OK", "User account created",userService.viewUser(user.getUserId())));
-//            }
-//            else if(userService.saveUser(user, filePath) == 1)
-//            {
-//                logger.info("Duplicate email found");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-//            }
-//            else
-//            {
-//                logger.info("Invalid email");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            logger.error("Failed to create the user account");
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
-//        }
-//    }

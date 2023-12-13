@@ -23,7 +23,7 @@ public class Product {
     private String description;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Integer quantity; // total number of items in the stock
 
     @Column
     private Double rating;
@@ -39,6 +39,9 @@ public class Product {
 
     @Column(nullable = false)
     private String category;
+
+    @Column
+    private Integer noOfItems = 0; // no of items added to the cart
 
 //    @ElementCollection
 //    private List<String> productImages;
