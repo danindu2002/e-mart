@@ -10,16 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -34,7 +26,7 @@ public class UserServiceImpl implements UserService
     private AESConverter aesConverter;
 
     @Override
-    public int saveUser(User user, MultipartFile profilePhoto) {
+    public int saveUser(User user) {
         try{
             if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
             {
@@ -42,7 +34,7 @@ public class UserServiceImpl implements UserService
                 {
                     user.setRole(refRoleRepo.findRefRoleByRefRoleId(Long.parseLong(user.getRole())).getRefRoleName());
                     user.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
-                    user.setProfilePhoto(saveProfilePhoto(profilePhoto));
+
                     userRepo.save(user);
                     logger.info("user saved");
                     return 0;
@@ -89,7 +81,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public int updateUser(long userId, User user, Boolean changePwd, MultipartFile profilePhoto) throws IOException {
+    public int updateUser(long userId, User user, Boolean changePwd) {
         User updatedUser = userRepo.findByUserIdAndDeletedIsFalse(userId);
         if (updatedUser == null) {
             logger.info("User not found");
@@ -108,7 +100,7 @@ public class UserServiceImpl implements UserService
                     updatedUser.setContactNo(user.getContactNo());
                     updatedUser.setAddress(user.getAddress());
                     if (changePwd) updatedUser.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
-                    if (user.getProfilePhoto() != null)user.setProfilePhoto(saveProfilePhoto(profilePhoto));
+                    if (user.getProfilePhoto() != null) updatedUser.setProfilePhoto(user.getProfilePhoto());
                     userRepo.save(updatedUser);
 
                     logger.info("User updated");
@@ -155,21 +147,22 @@ public class UserServiceImpl implements UserService
         return null;
     }
 
-    @Override
-    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
-        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart/img";
+//    @Override
+//    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
+//        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart/img";
+//
+//        File uploadDirFile = new File(uploadDir);
+//        if (!uploadDirFile.exists()) {
+//            uploadDirFile.mkdirs();
+//        }
+//
+//        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
+//
+//        Path filePath = Paths.get(uploadDir, fileName);
+//        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//        return "/profilePhotos/" + fileName;
+//    }
 
-        File uploadDirFile = new File(uploadDir);
-        if (!uploadDirFile.exists()) {
-            uploadDirFile.mkdirs();
-        }
-
-        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
-
-        Path filePath = Paths.get(uploadDir, fileName);
-        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return "/prfilePhotos/" + fileName;
-    }
 }
 

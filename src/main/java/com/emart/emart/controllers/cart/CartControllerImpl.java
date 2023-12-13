@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/cart")
+@RequestMapping("api/v1/cart")
 public class CartControllerImpl implements CartController{
 }

@@ -12,7 +12,7 @@ import static com.emart.emart.utility.Utility.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/categories")
+@RequestMapping("api/v1/categories")
 public class RefCategoryControllerImpl implements RefCategoryController{
 
     private final Logger logger = LoggerFactory.getLogger(RefCategoryControllerImpl.class);
@@ -21,7 +21,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     RefCategoryService refCategoryService;
 
     @Override
-    @PostMapping("/create/{categoryName}")
+    @PostMapping("/{categoryName}")
     public ResponseEntity<Object> createCategory(String categoryName) {
         try
         {
@@ -40,7 +40,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
-    @GetMapping("/viewAll")
+    @GetMapping("/")
     public ResponseEntity<Object> viewAllCategories() {
         if(!refCategoryService.viewAllCategories().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All categories found", refCategoryService.viewAllCategories()));
@@ -49,7 +49,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
-    @PutMapping("/update")
+    @PutMapping("/")
     public ResponseEntity<Object> updateCategory(String categoryName, Long categoryId) {
         try
         {
@@ -74,7 +74,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
-    @DeleteMapping("/delete/{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public ResponseEntity<Object> deleteCategory(Long categoryId) {
         try
         {

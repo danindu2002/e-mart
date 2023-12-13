@@ -1,10 +1,7 @@
 package com.emart.emart.controllers.product;
 
-import com.emart.emart.controllers.user.UserControllerImpl;
 import com.emart.emart.dtos.ProductDto;
-import com.emart.emart.dtos.UserDto;
 import com.emart.emart.models.Product;
-import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.services.product.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,7 @@ import static com.emart.emart.utility.Utility.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/products")
+@RequestMapping("api/v1/products")
 public class ProductControllerImpl implements ProductController{
     private final Logger logger = LoggerFactory.getLogger(ProductControllerImpl.class);
 
@@ -25,7 +22,7 @@ public class ProductControllerImpl implements ProductController{
     private ProductService productService;
 
     @Override
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<Object> createProduct(Product product) {
         try
         {
@@ -42,7 +39,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/viewAll")
+    @GetMapping("/view-products")
     public ResponseEntity<Object> viewAllProducts() {
         if(!productService.viewAllProducts().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All products found", productService.viewAllProducts()));
@@ -51,7 +48,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/view/{productId}")
+    @GetMapping("/view-products/{productId}")
     public ResponseEntity<Object> viewById(Long productId) {
         ProductDto product = productService.viewProduct(productId);
         if (product == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
@@ -61,7 +58,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/search-products/{keyword}")
     public ResponseEntity<Object> searchProducts(String keyword) {
         if(!productService.searchProducts(keyword).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchProducts(keyword)));
@@ -70,7 +67,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/searchPrice")
+    @GetMapping("/search-price")
     public ResponseEntity<Object> searchByPrice(Double minPrice, Double maxPrice) {
         if(!productService.searchByPrice(minPrice, maxPrice).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPrice(minPrice, maxPrice)));
@@ -79,7 +76,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/searchCategory/{category}")
+    @GetMapping("/search-category/{category}")
     public ResponseEntity<Object> searchByCategory(String category) {
         if(!productService.searchByCategory(category).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByCategory(category)));
@@ -88,7 +85,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @GetMapping("/searchBoth")
+    @GetMapping("/search-both")
     public ResponseEntity<Object> searchByPriceAndCategory(Double minPrice, Double maxPrice, String category) {
         if(!productService.searchByPriceAndCategory(category, minPrice, maxPrice).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPriceAndCategory(category, minPrice, maxPrice)));
@@ -97,7 +94,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @PutMapping("/update/{productId}")
+    @PutMapping("/{productId}")
     public ResponseEntity<Object> updateProduct(Long productId, Product product) {
         try
         {
@@ -122,7 +119,7 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @DeleteMapping("/delete/{productId}")
+    @DeleteMapping("/{productId}")
     public ResponseEntity<Object> deleteProduct(Long productId) {
         try
         {

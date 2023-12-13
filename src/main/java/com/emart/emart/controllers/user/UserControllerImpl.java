@@ -16,7 +16,7 @@ import static com.emart.emart.utility.Utility.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("api/v1/users")
 public class UserControllerImpl implements UserController{
     private final Logger logger = LoggerFactory.getLogger(UserControllerImpl.class);
 
@@ -55,16 +55,16 @@ public class UserControllerImpl implements UserController{
 //    }
 
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<Object> createUser(
             @RequestPart("user") User user,
             @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
         try {
-            if (userService.saveUser(user, profilePhoto) == 0) {
+            if (userService.saveUser(user) == 0) {
                 logger.info("User account created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "User account created", userService.viewUser(user.getUserId())));
-            } else if (userService.saveUser(user, profilePhoto) == 1) {
+            } else if (userService.saveUser(user) == 1) {
                 logger.info("Duplicate email found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
             } else {
@@ -77,7 +77,7 @@ public class UserControllerImpl implements UserController{
         }
     }
     @Override
-    @GetMapping("/search")
+    @GetMapping("/search-users")
     public ResponseEntity<Object> searchUser(String keyword, Long role) {
         if(!userService.searchUser(keyword, role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.searchUser(keyword, role)));
@@ -86,7 +86,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping("/view/{userId}")
+    @GetMapping("/view-users/{userId}")
     public ResponseEntity<Object> viewById(Long userId) {
         UserDto user = userService.viewUser(userId);
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
@@ -96,7 +96,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping("/viewAll/{role}")
+    @GetMapping("/view-user-roles/{role}")
     public ResponseEntity<Object> viewAllUsers(Long role) {
         if(!userService.viewAllUsers(role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.viewAllUsers(role)));
@@ -105,7 +105,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping("/viewAll")
+    @GetMapping("/view-users")
     public ResponseEntity<Object> viewAll() {
         if(!userService.viewAll().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
@@ -114,19 +114,19 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PutMapping("/update/{userId}/{changePwd}")
+    @PutMapping("/{userId}/{changePwd}")
     public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd, MultipartFile profilePhoto)
     {
         try {
-            if (userService.updateUser(userId, user, changePwd, profilePhoto) == 0) {
+            if (userService.updateUser(userId, user, changePwd) == 0) {
                 logger.info("User updated successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "User updated successfully", userService.viewUser(userId)));
-            } else if (userService.updateUser(userId, user, changePwd, profilePhoto) == 1) {
+            } else if (userService.updateUser(userId, user, changePwd) == 1) {
                 logger.info("Duplicate email found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-            } else if (userService.updateUser(userId, user, changePwd, profilePhoto) == 2) {
+            } else if (userService.updateUser(userId, user, changePwd) == 2) {
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
@@ -171,7 +171,7 @@ public class UserControllerImpl implements UserController{
 //    }
 
     @Override
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(Long userId) {
         try
         {
@@ -200,7 +200,7 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @PostMapping("/authenticate")
+    @PostMapping("/authenticate-users")
     public ResponseEntity<Object> authenticateUser(String email, String password) {
         User user = userService.authenticateUser(email, password);
         if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
@@ -208,7 +208,7 @@ public class UserControllerImpl implements UserController{
                 logger.info("Authenticated as "+ user.getRole() +" successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", user));
             }
-            else{
+            else {
                 logger.info("Incorrect credentials");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseItemDto("404 Not Found", "Incorrect credentials", ""));
             }
