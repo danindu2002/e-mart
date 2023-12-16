@@ -1,5 +1,6 @@
 package com.emart.emart.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,9 +19,13 @@ public class Checkout {
 
     private Double total = 0.0;
 
-    @ManyToMany
-    private List<Product> productList;
+    private Boolean ordered = false;
+
+//    @JsonIgnore
+    @OneToMany(mappedBy = "checkout", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductCheckout> productCheckouts;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

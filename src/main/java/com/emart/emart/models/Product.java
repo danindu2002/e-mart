@@ -40,15 +40,14 @@ public class Product {
     @Column(nullable = false)
     private String category;
 
-    @Column
-    private Integer noOfItems = 0; // no of items added to the cart
-
-    @Column
-    private Double subTotal = 0.0; // subtotal = price * noOfItems
-
 //    @ElementCollection
 //    private List<String> productImages;
 
     @Column
     private Boolean deleted = false;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductCheckout> productCheckouts;
+
+
 }

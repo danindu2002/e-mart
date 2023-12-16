@@ -1,14 +1,15 @@
 package com.emart.emart.dtos;
 
-import com.emart.emart.models.User;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class CheckoutDto {
-    private Long cartId;
-    private List<ProductDto> productDtoList;
-    private User user;
-    private Double subTotal;
+    private Long checkoutId;
+    private Date checkoutDate;
+    private List<ProductCheckoutDto> productsList;
+    private UserDto user;
+    private Double total;
 }
