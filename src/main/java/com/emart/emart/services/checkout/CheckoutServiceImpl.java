@@ -2,8 +2,6 @@ package com.emart.emart.services.checkout;
 
 import com.emart.emart.dtos.CheckoutDto;
 import com.emart.emart.dtos.ProductCheckoutDto;
-import com.emart.emart.dtos.ProductDto;
-import com.emart.emart.mappers.ProductMapper;
 import com.emart.emart.mappers.UserMapper;
 import com.emart.emart.models.Checkout;
 import com.emart.emart.models.Product;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service

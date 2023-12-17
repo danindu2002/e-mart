@@ -3,6 +3,7 @@ package com.emart.emart.services.product;
 import com.emart.emart.dtos.ProductDto;
 import com.emart.emart.models.Product;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
@@ -16,4 +17,9 @@ public interface ProductService {
     List<ProductDto> searchByPriceAndCategory(String category, Double minPrice, Double maxPrice);
     int updateProduct(Long productId, Product product);
     int deleteProduct(Long productId);
+
+    // Helper methods for file handling
+    void saveBase64DocumentToFile(String base64Document, String filePath);
+    String convertDocumentToBase64(String filePath) throws IOException;
+    void deleteDocumentFile(String filePath);
 }

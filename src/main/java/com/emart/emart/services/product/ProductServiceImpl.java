@@ -10,13 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class ProductServiceImpl implements ProductService
-{
+public class ProductServiceImpl implements ProductService {
     private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+    public String baseFileLocation = "D:\\OneDrive - Informatics Holdings\\Evaluation Tasks\\e-mart";
 
     @Autowired
     ProductRepo productRepo;
@@ -25,13 +29,31 @@ public class ProductServiceImpl implements ProductService
 
     @Override
     public void saveProduct(Product product) {
-        logger.info("product saved");
+
+        if (!product.getDocumentPath().isEmpty()) {
+            // Saving the document
+            String documentFileName = "document_" + System.currentTimeMillis() + ".pdf";
+
+            // Base file location defined at the top
+            String documentFilePath = baseFileLocation + "\\documents\\" + product.getProductCode() + "\\" + documentFileName;
+            saveBase64DocumentToFile(product.getDocumentPath(), documentFilePath);
+            product.setDocumentPath(documentFilePath);
+        }
+        else product.setDocumentPath("");
+
         product.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
         productRepo.save(product);
     }
 
     @Override
     public ProductDto viewProduct(Long productId) {
+        Product product = productRepo.findByProductIdAndDeletedIsFalse(productId);
+
+        // converting the file to base64 if exists
+        if (!product.getDocumentPath().isEmpty()) {
+            String base64Document = convertDocumentToBase64(product.getDocumentPath());
+            product.setDocumentPath(base64Document);
+        }
         logger.info("fetched product");
         return ProductMapper.productMapper.mapToProductDto(productRepo.findByProductIdAndDeletedIsFalse(productId));
     }
@@ -79,16 +101,16 @@ public class ProductServiceImpl implements ProductService
     @Override
     public int updateProduct(Long productId, Product product) {
         Product updatedProduct = productRepo.findByProductIdAndDeletedIsFalse(productId);
-        if (updatedProduct == null){
+        if (updatedProduct == null) {
             logger.error("product not found");
             return 2;
-        }
-        else{
+        } else {
             Product product1 = productRepo.findByProductCodeAndDeletedIsFalse(product.getProductCode());
-            if(product1 == null || Objects.equals(product1.getProductId(), productId))
-            {
+            String currentDocumentPath = updatedProduct.getDocumentPath();
+
+            if (product1 == null || Objects.equals(product1.getProductId(), productId)) {
                 updatedProduct.setProductName(product.getProductName());
-                updatedProduct.setProductCode(product.getProductCode());
+//                updatedProduct.setProductCode(product.getProductCode());
                 updatedProduct.setDescription(product.getDescription());
                 updatedProduct.setQuantity(product.getQuantity());
                 updatedProduct.setRating(product.getRating());
@@ -98,10 +120,17 @@ public class ProductServiceImpl implements ProductService
                 updatedProduct.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
                 productRepo.save(updatedProduct);
 
+                if (!currentDocumentPath.isEmpty()){
+                    // Deleting the existing document file
+                    deleteDocumentFile(currentDocumentPath);
+
+                    // Saving the new base64 document to file
+                    saveBase64DocumentToFile(product.getDocumentPath(), updatedProduct.getDocumentPath());
+                }
+
                 logger.info("product updated");
                 return 0;
-            }
-            else {
+            } else {
                 logger.info("duplicate product code found");
                 return 1;
             }
@@ -111,15 +140,69 @@ public class ProductServiceImpl implements ProductService
     @Override
     public int deleteProduct(Long productId) {
         Product deletedProduct = productRepo.findByProductIdAndDeletedIsFalse(productId);
-        if (deletedProduct == null){
+        if (deletedProduct == null) {
             logger.error("product not found");
             return 1;
         }
-        else{
+        else {
+            // Deleting the existing document file if exists
+            if (!deletedProduct.getDocumentPath().isEmpty()) {
+                deleteDocumentFile(deletedProduct.getDocumentPath());
+            }
             deletedProduct.setDeleted(true);
             productRepo.save(deletedProduct);
             logger.info("product deleted");
             return 0;
+        }
+    }
+
+
+    // Helper method to save base64 document to file
+    @Override
+    public void saveBase64DocumentToFile(String base64Document, String filePath) {
+        try {
+            // Creating a file if not exists
+            Path directoryPath = Paths.get(filePath).getParent();
+            Files.createDirectories(directoryPath);
+
+            // Saving the base64 document to file
+            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+                byte[] decodedBytes = Base64.getDecoder().decode(base64Document);
+                fos.write(decodedBytes);
+            }
+        } catch (IOException e) {
+            logger.error("Error while saving base64 document to file", e);
+            throw new RuntimeException("Error while saving base64 document to file", e);
+        }
+    }
+
+    // Helper method to convert document to base64
+    @Override
+    public String convertDocumentToBase64(String filePath) {
+        byte[] documentBytes;
+        try {
+            documentBytes = Files.readAllBytes(Path.of(filePath));
+        } catch (IOException e) {
+            logger.error("Error while converting document to base64", e);
+            throw new RuntimeException("Error while converting document to base64", e);
+        }
+        return Base64.getEncoder().encodeToString(documentBytes);
+    }
+
+    // Helper method to delete document file
+    @Override
+    public void deleteDocumentFile(String filePath)
+    {
+        try {
+            // Delete the document file
+            Files.deleteIfExists(Path.of(filePath));
+
+            // Delete the parent folder
+            Files.deleteIfExists(Paths.get(filePath).getParent());
+        }
+        catch (IOException e) {
+            logger.error("Error while deleting document file", e);
+            throw new RuntimeException("Error while deleting document file", e);
         }
     }
 }

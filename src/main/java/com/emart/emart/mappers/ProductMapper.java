@@ -16,9 +16,4 @@ public interface ProductMapper {
     // for general product details
     ProductDto mapToProductDto(Product product);
     List<ProductDto> maptoProductDtoList(List<Product> productList);
-
-//    // for products at checkout
-//    ProductCheckoutDto mapToProductCheckoutDto(Product product);
-//    List<ProductCheckoutDto> maptoProductCheckoutDtoList(List<ProductCheckout> productList);
-
 }

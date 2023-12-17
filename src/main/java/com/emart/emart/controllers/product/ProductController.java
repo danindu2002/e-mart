@@ -16,5 +16,4 @@ public interface ProductController{
     ResponseEntity<Object> searchByPriceAndCategory(@RequestParam Double minPrice, @RequestParam Double maxPrice, @RequestParam String category);
     ResponseEntity<Object> updateProduct(@PathVariable Long productId, @RequestBody Product product);
     ResponseEntity<Object> deleteProduct(@PathVariable Long productId);
-
 }

@@ -33,7 +33,7 @@ public class ProductControllerImpl implements ProductController{
         }
         catch (Exception e)
         {
-            logger.error("Duplicate product code found");
+            logger.error("Duplicate product code found",e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplicate product code found"));
         }
     }
@@ -50,11 +50,16 @@ public class ProductControllerImpl implements ProductController{
     @Override
     @GetMapping("/view-products/{productId}")
     public ResponseEntity<Object> viewById(Long productId) {
-        ProductDto product = productService.viewProduct(productId);
-        if (product == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
-        else {
-            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product found", product));
-        }
+       try {
+            ProductDto product = productService.viewProduct(productId);
+            if (product == null) throw new Exception();
+            else {
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product found", product));
+            }
+       }
+       catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+       }
     }
 
     @Override

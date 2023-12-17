@@ -17,5 +17,6 @@ public class ProductDto {
     private Double price;
     private String size;
     private String color;
-//    private List<String> productImages;
+    private String documentPath;
+//    private String productImagesPath;
 }
