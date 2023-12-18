@@ -13,4 +13,10 @@ public class RefCategory {
 
     @Column(nullable = false, unique = true)
     private String refCategoryName;
+
+    @Column
+    private String categoryDescription = "";
+
+    @Column(nullable = false, unique = true)
+    private String categoryCode;
 }

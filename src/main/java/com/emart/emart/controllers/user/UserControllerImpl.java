@@ -27,35 +27,6 @@ public class UserControllerImpl implements UserController{
     private UserRepo userRepo;
 
     @Override
-//    @PostMapping("/create")
-//    public ResponseEntity<Object> createUser(@RequestBody User user) {
-//        try
-//        {
-//            if(userService.saveUser(user) == 0)
-//            {
-//                logger.info("User account created successfully");
-//                return ResponseEntity.status(HttpStatus.OK)
-//                        .body(convertToResponseItemDto("200 OK", "User account created",userService.viewUser(user.getUserId())));
-//            }
-//            else if(userService.saveUser(user) == 1)
-//            {
-//                logger.info("Duplicate email found");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-//            }
-//            else
-//            {
-//                logger.info("Invalid email");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            logger.error("Failed to create the user account", e);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
-//        }
-//    }
-
-
     @PostMapping("/")
     public ResponseEntity<Object> createUser(@RequestBody User user) {
         try {
@@ -139,36 +110,6 @@ public class UserControllerImpl implements UserController{
         }
     }
 
-//    @Override
-//    @PutMapping("/update/{userId}/{changePwd}")
-//    public ResponseEntity<Object> updateUser(User user, Long userId, Boolean changePwd) {
-//        try
-//        {
-//            if(userService.updateUser(userId, user, changePwd) == 0)
-//            {
-//                logger.info("User updated successfully");
-//                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "user updated successfully",
-//                        userService.viewUser(userId)));
-//            }
-//            else if(userService.updateUser(userId, user, changePwd) == 1)
-//            {
-//                logger.info("Duplicate email found");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-//            }
-//            else if (userService.updateUser(userId, user, changePwd) == 2)
-//            {
-//                logger.info("Invalid email");
-//                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
-//            }
-//            else throw new Exception();
-//        }
-//        catch (Exception e)
-//        {
-//            logger.error("User account not found");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User account not found"));
-//        }
-//    }
-
     @Override
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(Long userId) {
@@ -177,7 +118,7 @@ public class UserControllerImpl implements UserController{
             if (userService.deleteUser(userId) == 0)
             {
                 logger.info("User deleted");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "User with the ID : " + userId + " deleted successfully"));
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "User deleted successfully"));
             }
             else
 //                if (userService.deleteUser(userId) == 1)

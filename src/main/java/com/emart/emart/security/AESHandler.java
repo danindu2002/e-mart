@@ -11,14 +11,6 @@ public class AESHandler {
 
     private static final String SECRET_KEY = "mySecretKey1234567890000";
 
-//    public String encrypt(String plaintext) throws Exception {
-//        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
-//        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-//        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-//        byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes());
-//        return Base64.encodeBase64String(encryptedBytes);
-//    }
-
     public String encrypt(String base64Input) throws Exception {
         byte[] decodedBytes = Base64.decodeBase64(base64Input);
 

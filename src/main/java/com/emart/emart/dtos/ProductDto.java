@@ -18,5 +18,5 @@ public class ProductDto {
     private String size;
     private String color;
     private String documentPath;
-//    private String productImagesPath;
+//    private List<String> productImagesPath;
 }

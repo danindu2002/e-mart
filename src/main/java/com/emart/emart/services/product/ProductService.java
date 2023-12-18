@@ -17,6 +17,7 @@ public interface ProductService {
     List<ProductDto> searchByPriceAndCategory(String category, Double minPrice, Double maxPrice);
     int updateProduct(Long productId, Product product);
     int deleteProduct(Long productId);
+//    int uploadImage(String )
 
     // Helper methods for file handling
     void saveBase64DocumentToFile(String base64Document, String filePath);

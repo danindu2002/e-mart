@@ -15,6 +15,5 @@ public interface UserService {
     int updateUser(long userId, User user, Boolean changePwd);
     int deleteUser(long userId);
     User authenticateUser(String email, String password);
-//    String saveProfilePhoto(MultipartFile profilePhoto) throws IOException;
 
 }

@@ -13,7 +13,6 @@ import java.util.List;
 public interface ProductMapper {
     ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
-    // for general product details
     ProductDto mapToProductDto(Product product);
     List<ProductDto> maptoProductDtoList(List<Product> productList);
 }

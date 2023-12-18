@@ -8,6 +8,7 @@ import com.emart.emart.repositories.ref.RefCategoryRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.*;
@@ -20,7 +21,9 @@ import java.util.Objects;
 @Service
 public class ProductServiceImpl implements ProductService {
     private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
-    public String baseFileLocation = "D:\\OneDrive - Informatics Holdings\\Evaluation Tasks\\e-mart";
+
+    @Value("${baseUrl.fileLocation}")
+    private String baseFileLocation;
 
     @Autowired
     ProductRepo productRepo;
@@ -30,15 +33,28 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void saveProduct(Product product) {
 
+        // document uploading
         if (!product.getDocumentPath().isEmpty()) {
             // Saving the document
             String documentFileName = "document_" + System.currentTimeMillis() + ".pdf";
 
-            // Base file location defined at the top
+            // Change the base file location from yml file
             String documentFilePath = baseFileLocation + "\\documents\\" + product.getProductCode() + "\\" + documentFileName;
             saveBase64DocumentToFile(product.getDocumentPath(), documentFilePath);
             product.setDocumentPath(documentFilePath);
         }
+
+//        // product images uploading
+//        if (!product.getProductImagesPath().isEmpty()) {
+//            // Saving an image
+//            String imageName = "image_" + System.currentTimeMillis() + ".jpg";
+//
+//            // Change the base file location from yml file
+//            String imagePath = baseFileLocation + "\\images\\" + product.getProductCode() + "\\" + imageName;
+//            saveBase64DocumentToFile(product.getProductImagesPath(), imagePath);
+//            product.setProductImagesPath(String.valueOf(Paths.get(imagePath).getParent()));
+//        }
+
         else product.setDocumentPath("");
 
         product.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());

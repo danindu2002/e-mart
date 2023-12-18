@@ -1,5 +1,6 @@
 package com.emart.emart.controllers.ref.category;
 
+import com.emart.emart.models.ref.RefCategory;
 import com.emart.emart.services.ref.category.RefCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +22,19 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     RefCategoryService refCategoryService;
 
     @Override
-    @PostMapping("/{categoryName}")
-    public ResponseEntity<Object> createCategory(String categoryName) {
+    @PostMapping("/")
+    public ResponseEntity<Object> createCategory(RefCategory refCategory) {
         try
         {
-            if (refCategoryService.saveCategory(categoryName) == 0) {
+            if (refCategoryService.saveCategory(refCategory) == 0) {
                 logger.info("category created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseMsgDto("200 OK", "category created successfully"));
+                        .body(convertToResponseItemDto("200 OK", "category created successfully",  refCategoryService.viewCategory(refCategory.getRefCategoryId())));
+            }
+            else if (refCategoryService.saveCategory(refCategory) == 2) {
+                logger.info("Duplicate category code found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(convertToResponseMsgDto("400 Bad Request", "Duplicate category code found"));
             }
             else throw new Exception();
         }
@@ -50,16 +56,16 @@ public class RefCategoryControllerImpl implements RefCategoryController{
 
     @Override
     @PutMapping("/")
-    public ResponseEntity<Object> updateCategory(String categoryName, Long categoryId) {
+    public ResponseEntity<Object> updateCategory(RefCategory refCategory, Long categoryId) {
         try
         {
-            if(refCategoryService.updateCategory(categoryId, categoryName) == 0)
+            if(refCategoryService.updateCategory(categoryId, refCategory) == 0)
             {
                 logger.info("Category updated successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Category updated successfully",
                         refCategoryService.viewCategory(categoryId)));
             }
-            else if(refCategoryService.updateCategory(categoryId, categoryName) == 2)
+            else if(refCategoryService.updateCategory(categoryId, refCategory) == 2)
             {
                 logger.info("Duplicate category name found");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Duplicate category name found"));
@@ -68,7 +74,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
         }
         catch (Exception e)
         {
-            logger.error("Category not found");
+            logger.error("Category not found", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Category not found"));
         }
     }

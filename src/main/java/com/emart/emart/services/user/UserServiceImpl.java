@@ -146,23 +146,5 @@ public class UserServiceImpl implements UserService
         }
         return null;
     }
-
-//    @Override
-//    public String saveProfilePhoto(MultipartFile profilePhoto) throws IOException {
-//        String uploadDir = "D:/OneDrive - Informatics Holdings/Evaluation Tasks/e-mart/img";
-//
-//        File uploadDirFile = new File(uploadDir);
-//        if (!uploadDirFile.exists()) {
-//            uploadDirFile.mkdirs();
-//        }
-//
-//        String fileName = UUID.randomUUID().toString() + "_" + profilePhoto.getOriginalFilename();
-//
-//        Path filePath = Paths.get(uploadDir, fileName);
-//        Files.copy(profilePhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//        return "/profilePhotos/" + fileName;
-//    }
-
 }
 

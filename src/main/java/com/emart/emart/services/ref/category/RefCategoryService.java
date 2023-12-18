@@ -5,10 +5,10 @@ import com.emart.emart.models.ref.RefCategory;
 import java.util.List;
 
 public interface RefCategoryService {
-    int saveCategory(String categoryName);
+    int saveCategory(RefCategory category);
     RefCategory viewCategory(Long categoryId);
     List<RefCategory> viewAllCategories();
-    int updateCategory(Long categoryId, String categoryName);
+    int updateCategory(Long categoryId, RefCategory category);
     int deleteCategory(Long categoryId);
 
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class RefCategoryServiceImpl implements RefCategoryService {
 
@@ -16,15 +17,16 @@ public class RefCategoryServiceImpl implements RefCategoryService {
     @Autowired
     RefCategoryRepo refCategoryRepo;
     @Override
-    public int saveCategory(String categoryName) {
-        RefCategory category = refCategoryRepo.findByRefCategoryName(categoryName);
-        if(category != null) return 1;
+    public int saveCategory(RefCategory category) {
+        RefCategory category1 = refCategoryRepo.findByRefCategoryName(category.getRefCategoryName());
+        RefCategory categoryByCode = refCategoryRepo.findByCategoryCode(category.getCategoryCode());
+
+        if (category1 != null) return 1; // duplicate category
+        else if (categoryByCode != null) return 2; // duplicate category code
         else {
-            category = new RefCategory();
-            category.setRefCategoryName(categoryName);
             logger.info("category saved");
             refCategoryRepo.save(category);
-            return 0;
+            return 0; // saved
         }
     }
 
@@ -41,16 +43,18 @@ public class RefCategoryServiceImpl implements RefCategoryService {
     }
 
     @Override
-    public int updateCategory(Long categoryId, String categoryName) {
-        RefCategory category = refCategoryRepo.findByRefCategoryId(categoryId);
-        RefCategory categoryByName = refCategoryRepo.findByRefCategoryName(categoryName);
+    public int updateCategory(Long categoryId, RefCategory category) {
+        RefCategory category1 = refCategoryRepo.findByRefCategoryId(categoryId);
+        RefCategory categoryByName = refCategoryRepo.findByRefCategoryName(category.getRefCategoryName());
 
-        if (category == null) return 1; // category not found
-        else if(categoryByName != null) return 2; // duplicate name
+        if (category1 == null) return 1; // category not found
+        else if(categoryByName != null && !categoryId.equals(categoryByName.getRefCategoryId())) return 2; // duplicate name
         else {
-            category.setRefCategoryName(categoryName);
+            category1.setRefCategoryName(category.getRefCategoryName());
+            category1.setCategoryDescription(category.getCategoryDescription());
+            refCategoryRepo.save(category1);
+
             logger.info("category updated");
-            refCategoryRepo.save(category);
             return 0; // updated
         }
     }
