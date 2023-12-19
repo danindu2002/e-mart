@@ -1,4 +1,4 @@
-package com.emart.emart.models.ref;
+package com.emart.emart.models.reference;
 
 import jakarta.persistence.*;
 import lombok.Data;

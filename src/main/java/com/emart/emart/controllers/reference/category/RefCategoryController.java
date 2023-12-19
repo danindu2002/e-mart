@@ -1,6 +1,6 @@
-package com.emart.emart.controllers.ref.category;
+package com.emart.emart.controllers.reference.category;
 
-import com.emart.emart.models.ref.RefCategory;
+import com.emart.emart.models.reference.RefCategory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

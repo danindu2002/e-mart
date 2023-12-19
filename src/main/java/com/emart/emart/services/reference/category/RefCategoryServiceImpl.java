@@ -1,7 +1,7 @@
-package com.emart.emart.services.ref.category;
+package com.emart.emart.services.reference.category;
 
-import com.emart.emart.models.ref.RefCategory;
-import com.emart.emart.repositories.ref.RefCategoryRepo;
+import com.emart.emart.models.reference.RefCategory;
+import com.emart.emart.repositories.reference.RefCategoryRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

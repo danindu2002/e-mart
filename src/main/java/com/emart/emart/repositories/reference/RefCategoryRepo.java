@@ -1,7 +1,7 @@
-package com.emart.emart.repositories.ref;
+package com.emart.emart.repositories.reference;
 
 
-import com.emart.emart.models.ref.RefCategory;
+import com.emart.emart.models.reference.RefCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

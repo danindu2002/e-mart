@@ -1,8 +1,10 @@
 package com.emart.emart.controllers.product;
 
+import com.emart.emart.dtos.ProductDocumentDto;
 import com.emart.emart.dtos.ProductDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.services.product.ProductService;
+import com.emart.emart.services.productDocument.ProductDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class ProductControllerImpl implements ProductController{
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductDocumentService productDocumentService;
 
     @Override
     @PostMapping("/")

@@ -1,6 +1,6 @@
-package com.emart.emart.services.ref.category;
+package com.emart.emart.services.reference.category;
 
-import com.emart.emart.models.ref.RefCategory;
+import com.emart.emart.models.reference.RefCategory;
 
 import java.util.List;
 

@@ -41,15 +41,12 @@ public class Product {
     private String category;
 
     @Column
-    private String productImagesPath = "";
-
-    @Column
-    private String documentPath = "";
-
-    @Column
     private Boolean deleted = false;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductCheckout> productCheckouts;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductDocument> productDocuments;
 
 }
