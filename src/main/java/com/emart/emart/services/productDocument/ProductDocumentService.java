@@ -1,7 +1,7 @@
 package com.emart.emart.services.productDocument;
 
-import com.emart.emart.dtos.ProductDocumentDetailsDto;
-import com.emart.emart.dtos.ProductDocumentDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDetailsDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDto;
 import com.emart.emart.models.ProductDocument;
 
 import java.util.List;

@@ -32,11 +32,11 @@ public class CheckoutControllerImpl implements CheckoutController {
             if (checkoutService.createCheckout(checkout, userId) == 0) {
                 logger.info("checkout created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseItemDto("200 OK", "checkout created successfully", checkoutService.viewCheckout(userId)));
+                        .body(convertToResponseItemDto("200 OK", "Checkout created successfully", checkoutService.viewCheckout(userId)));
             }
             else if (checkoutService.createCheckout(checkout, userId) == 1) {
                 logger.error("Active checkout found, cannot create a new one");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Active checkout found, cannot create a new one"));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "An active checkout has found, cannot create a new one"));
             }
             else throw new Exception();
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class CheckoutControllerImpl implements CheckoutController {
             }
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no active checkout found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No active checkout found"));
         }
     }
 
@@ -69,7 +69,7 @@ public class CheckoutControllerImpl implements CheckoutController {
             if (checkoutService.updateCheckout(checkout, userId) == 0) {
                 logger.info("checkout updated successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseItemDto("200 OK", "checkout updated successfully", checkoutService.viewCheckoutById(checkoutId)));
+                        .body(convertToResponseItemDto("200 OK", "Checkout updated successfully", checkoutService.viewCheckoutById(checkoutId)));
 
             } else throw new Exception();
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class CheckoutControllerImpl implements CheckoutController {
             {
                 logger.error("product not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 Not Found", "product not found"));
+                        .body(convertToResponseMsgDto("404 Not Found", "Product not found"));
             }
             else if(checkoutService.addToCart(userId, productId, noOfItems) == 4)
             {

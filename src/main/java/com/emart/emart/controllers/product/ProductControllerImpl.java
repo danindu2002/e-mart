@@ -1,10 +1,8 @@
 package com.emart.emart.controllers.product;
 
-import com.emart.emart.dtos.ProductDocumentDto;
-import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.services.product.ProductService;
-import com.emart.emart.services.productDocument.ProductDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,6 @@ public class ProductControllerImpl implements ProductController{
 
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ProductDocumentService productDocumentService;
 
     @Override
     @PostMapping("/")
@@ -33,7 +29,7 @@ public class ProductControllerImpl implements ProductController{
             productService.saveProduct(product);
             logger.info("product created successfully");
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(convertToResponseItemDto("200 OK", "product created successfully",productService.viewProduct(product.getProductId())));
+                    .body(convertToResponseItemDto("200 OK", "Product created successfully",productService.viewProduct(product.getProductId())));
         }
         catch (Exception e)
         {
@@ -48,7 +44,7 @@ public class ProductControllerImpl implements ProductController{
         if(!productService.viewAllProducts().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All products found", productService.viewAllProducts()));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
     }
 
     @Override
@@ -62,7 +58,7 @@ public class ProductControllerImpl implements ProductController{
             }
        }
        catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
        }
     }
 
@@ -72,7 +68,7 @@ public class ProductControllerImpl implements ProductController{
         if(!productService.searchProducts(keyword).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchProducts(keyword)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
     }
 
     @Override
@@ -81,7 +77,7 @@ public class ProductControllerImpl implements ProductController{
         if(!productService.searchByPrice(minPrice, maxPrice).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPrice(minPrice, maxPrice)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
     }
 
     @Override
@@ -90,7 +86,7 @@ public class ProductControllerImpl implements ProductController{
         if(!productService.searchByCategory(category).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByCategory(category)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
     }
 
     @Override
@@ -99,7 +95,7 @@ public class ProductControllerImpl implements ProductController{
         if(!productService.searchByPriceAndCategory(category, minPrice, maxPrice).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchByPriceAndCategory(category, minPrice, maxPrice)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no products found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
     }
 
     @Override
@@ -135,7 +131,7 @@ public class ProductControllerImpl implements ProductController{
             if (productService.deleteProduct(productId) == 0)
             {
                 logger.info("Product deleted");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Product with the ID : " + productId + " deleted successfully"));
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Product deleted successfully"));
             }
             else
             {

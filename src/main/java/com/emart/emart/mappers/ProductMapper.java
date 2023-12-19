@@ -1,9 +1,7 @@
 package com.emart.emart.mappers;
 
-import com.emart.emart.dtos.ProductCheckoutDto;
-import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.models.Product;
-import com.emart.emart.models.ProductCheckout;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

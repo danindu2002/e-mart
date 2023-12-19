@@ -1,10 +1,12 @@
 package com.emart.emart.services.product;
 
-import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.mappers.ProductMapper;
 import com.emart.emart.models.Product;
 import com.emart.emart.models.ProductDocument;
+import com.emart.emart.models.ProductImage;
 import com.emart.emart.repositories.ProductDocumentRepo;
+import com.emart.emart.repositories.ProductImageRepo;
 import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.repositories.reference.RefCategoryRepo;
 import org.slf4j.Logger;
@@ -25,22 +27,13 @@ public class ProductServiceImpl implements ProductService {
     RefCategoryRepo refCategoryRepo;
     @Autowired
     ProductDocumentRepo productDocumentRepo;
+    @Autowired
+    ProductImageRepo productImageRepo;
 
     @Override
     public void saveProduct(Product product) {
-
-//        // product images uploading
-//        if (!product.getProductImagesPath().isEmpty()) {
-//            // Saving an image
-//            String imageName = "image_" + System.currentTimeMillis() + ".jpg";
-//
-//            // Change the base file location from yml file
-//            String imagePath = baseFileLocation + "\\images\\" + product.getProductCode() + "\\" + imageName;
-//            saveBase64DocumentToFile(product.getProductImagesPath(), imagePath);
-//            product.setProductImagesPath(String.valueOf(Paths.get(imagePath).getParent()));
-//        }
-
         product.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
+        logger.info("product saved");
         productRepo.save(product);
     }
 
@@ -133,6 +126,15 @@ public class ProductServiceImpl implements ProductService {
                 for (ProductDocument productDocument : productDocumentList) {
                     productDocument.setDeleted(true);
                     productDocumentRepo.save(productDocument);
+                }
+            }
+
+            // Deleting existing images if exists
+            List<ProductImage> productImageList =  productImageRepo.findAllByProductAndDeletedIsFalse(deletedProduct);
+            if (productImageList != null){
+                for (ProductImage productImage : productImageList) {
+                    productImage.setDeleted(true);
+                    productImageRepo.save(productImage);
                 }
             }
 

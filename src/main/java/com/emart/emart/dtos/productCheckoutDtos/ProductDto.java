@@ -1,4 +1,4 @@
-package com.emart.emart.dtos;
+package com.emart.emart.dtos.productCheckoutDtos;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -17,6 +17,4 @@ public class ProductDto {
     private Double price;
     private String size;
     private String color;
-//    private String documentPath;
-//    private List<String> productImagesPath;
 }

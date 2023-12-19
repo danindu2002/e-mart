@@ -52,14 +52,14 @@ public class UserControllerImpl implements UserController{
         if(!userService.searchUser(keyword, role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.searchUser(keyword, role)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
     }
 
     @Override
     @GetMapping("/view-users/{userId}")
     public ResponseEntity<Object> viewById(Long userId) {
         UserDto user = userService.viewUser(userId);
-        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
         else {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "User found", user));
         }
@@ -71,7 +71,7 @@ public class UserControllerImpl implements UserController{
         if(!userService.viewAllUsers(role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.viewAllUsers(role)));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class UserControllerImpl implements UserController{
         if(!userService.viewAll().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no users found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
     }
 
     @Override
@@ -120,17 +120,10 @@ public class UserControllerImpl implements UserController{
                 logger.info("User deleted");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "User deleted successfully"));
             }
-            else
-//                if (userService.deleteUser(userId) == 1)
-            {
+            else {
                 logger.error("User account not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User account not found"));
             }
-//            else
-//            {
-//                logger.warn("This user has itineraries assigned to it");
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 UNAUTHORIZED", "This user has itineraries assigned to it"));
-//            }
         }
         catch (Exception e)
         {

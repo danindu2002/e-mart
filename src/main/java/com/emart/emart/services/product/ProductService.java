@@ -1,9 +1,8 @@
 package com.emart.emart.services.product;
 
-import com.emart.emart.dtos.ProductDto;
+import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.models.Product;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {

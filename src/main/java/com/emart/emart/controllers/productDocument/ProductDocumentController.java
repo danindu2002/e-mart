@@ -1,8 +1,7 @@
 package com.emart.emart.controllers.productDocument;
 
-import com.emart.emart.dtos.ProductDocumentDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 

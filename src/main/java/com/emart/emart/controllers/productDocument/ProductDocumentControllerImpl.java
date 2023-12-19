@@ -1,8 +1,7 @@
 package com.emart.emart.controllers.productDocument;
 
-import com.emart.emart.dtos.ProductDocumentDetailsDto;
-import com.emart.emart.dtos.ProductDocumentDto;
-import com.emart.emart.services.product.ProductService;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDetailsDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDto;
 import com.emart.emart.services.productDocument.ProductDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     private final Logger logger = LoggerFactory.getLogger(ProductDocumentControllerImpl.class);
 
     @Autowired
-    private ProductService productService;
-    @Autowired
     private ProductDocumentService productDocumentService;
 
     @Override
@@ -34,7 +31,7 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
             if (productDocumentService.saveProductDocument(productDocumentDto) == 0){
                 logger.info("document saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseMsgDto("200 OK", "document saved successfully"));
+                        .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
             }
             else {
                 logger.error("Product not found");

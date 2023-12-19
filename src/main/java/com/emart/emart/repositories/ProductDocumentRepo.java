@@ -1,6 +1,5 @@
 package com.emart.emart.repositories;
 
-import com.emart.emart.dtos.ProductDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.models.ProductDocument;
 import org.springframework.data.jpa.repository.JpaRepository;

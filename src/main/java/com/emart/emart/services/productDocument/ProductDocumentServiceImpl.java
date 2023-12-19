@@ -1,7 +1,7 @@
 package com.emart.emart.services.productDocument;
 
-import com.emart.emart.dtos.ProductDocumentDetailsDto;
-import com.emart.emart.dtos.ProductDocumentDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDetailsDto;
+import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.models.ProductDocument;
 import com.emart.emart.repositories.ProductDocumentRepo;
@@ -53,7 +53,10 @@ public class ProductDocumentServiceImpl implements ProductDocumentService{
             logger.info("document saved");
             return 0;
         }
-        else return 1;
+        else {
+            logger.error("product not found");
+            return 1;
+        }
     }
 
     // deleting a product document
@@ -118,9 +121,7 @@ public class ProductDocumentServiceImpl implements ProductDocumentService{
 
     @Override
     public List<ProductDocumentDetailsDto> mapToDocumentDetailsDtoList(List<ProductDocument> productDocuments) {
-        if ( productDocuments == null ) {
-            return null;
-        }
+        if ( productDocuments == null )  return null;
 
         List<ProductDocumentDetailsDto> list = new ArrayList<>( productDocuments.size() );
         for ( ProductDocument productDocument : productDocuments ) {

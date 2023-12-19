@@ -1,4 +1,4 @@
-package com.emart.emart.dtos;
+package com.emart.emart.dtos.productCheckoutDtos;
 
 import lombok.Data;
 

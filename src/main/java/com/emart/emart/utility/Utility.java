@@ -1,9 +1,8 @@
 package com.emart.emart.utility;
 
-import com.emart.emart.dtos.ResponseItemDto;
-import com.emart.emart.dtos.ResponseListDto;
-import com.emart.emart.dtos.ResponseMsgDto;
-import com.emart.emart.services.product.ProductServiceImpl;
+import com.emart.emart.dtos.responseDtos.ResponseItemDto;
+import com.emart.emart.dtos.responseDtos.ResponseListDto;
+import com.emart.emart.dtos.responseDtos.ResponseMsgDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

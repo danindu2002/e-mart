@@ -29,7 +29,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
             if (refCategoryService.saveCategory(refCategory) == 0) {
                 logger.info("category created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseItemDto("200 OK", "category created successfully",  refCategoryService.viewCategory(refCategory.getRefCategoryId())));
+                        .body(convertToResponseItemDto("200 OK", "Category created successfully",  refCategoryService.viewCategory(refCategory.getRefCategoryId())));
             }
             else if (refCategoryService.saveCategory(refCategory) == 2) {
                 logger.info("Duplicate category code found");
@@ -41,7 +41,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
         catch (Exception e)
         {
             logger.error("Duplicate category name found", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplcate category name found"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplicate category name found"));
         }
     }
 
@@ -51,7 +51,7 @@ public class RefCategoryControllerImpl implements RefCategoryController{
         if(!refCategoryService.viewAllCategories().isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All categories found", refCategoryService.viewAllCategories()));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "no categories found"));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No categories found"));
     }
 
     @Override
