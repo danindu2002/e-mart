@@ -16,26 +16,26 @@ public class Product {
     @Column(nullable = false)
     private String productName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 10)
     private String productCode; // eg: #100234
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String description;
 
     @Column(nullable = false)
     private Integer quantity; // total number of items in the stock
 
     @Column
-    private Double rating;
+    private Double rating = 0.0;
 
     @Column(nullable = false)
     private Double price;
 
     @Column
-    private String size;
+    private String size = "";
 
     @Column
-    private String color;
+    private String color = "";
 
     @Column(nullable = false)
     private String category;
