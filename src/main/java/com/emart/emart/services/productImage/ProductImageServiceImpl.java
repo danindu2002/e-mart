@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.emart.emart.utility.Utility.convertDocumentToBase64;
 import static com.emart.emart.utility.Utility.saveBase64DocumentToFile;
 
 @Service
@@ -41,7 +42,7 @@ public class ProductImageServiceImpl implements ProductImageService{
 
             // Change the base file location from yml file
             String imageFilePath = baseFileLocation + "\\images\\" + product.getProductCode() + "\\" + imageName;
-            saveBase64DocumentToFile(productImageDto.getImagePath(), imageFilePath);
+            saveBase64DocumentToFile(productImageDto.getImage(), imageFilePath);
 
             ProductImage productImage = new ProductImage();
             productImage.setImageName(productImageDto.getImageName());
@@ -77,13 +78,27 @@ public class ProductImageServiceImpl implements ProductImageService{
 
     // fetching all image details for a product
     @Override
-    public List<ProductImageDetailsDto> viewAllImages(Long productId) {
+    public List<ProductImageDetailsDto> viewAllImageDetails(Long productId) {
         Product product = productRepo.findByProductIdAndDeletedIsFalse(productId);
         logger.info("fetched image details list");
         return mapToImageDetailsDtoList(productImageRepo.findAllByProductAndDeletedIsFalse(product));
     }
 
-    // fetching the document
+    // fetching all images for a product
+    @Override
+    public List<ProductImageDto> viewAllImages(Long productId) {
+        Product product = productRepo.findByProductIdAndDeletedIsFalse(productId);
+        List<ProductImage> productImageObjects = productImageRepo.findAllByProductAndDeletedIsFalse(product);
+
+        List<ProductImageDto> imagesList = new ArrayList<>();
+
+        for ( ProductImage productImage : productImageObjects) {
+            imagesList.add(mapToImageDto(productImage));
+        }
+        return imagesList;
+    }
+
+    // fetching an image
     @Override
     public ProductImageDto viewImage(Long imageId) {
         ProductImage productImage = productImageRepo.findByImageIdAndDeletedIsFalse(imageId);
@@ -94,12 +109,13 @@ public class ProductImageServiceImpl implements ProductImageService{
         else return null;
     }
 
+
     // helper methods for mapping custom DTOs
     @Override
     public ProductImageDto mapToImageDto(ProductImage productImage) {
         ProductImageDto dto = new ProductImageDto();
         dto.setImageName(productImage.getImageName());
-        dto.setImagePath(productImage.getImagePath());
+        dto.setImage(convertDocumentToBase64(productImage.getImagePath()));
         dto.setProductId(productImage.getProduct().getProductId());
         return dto;
     }

@@ -2,6 +2,7 @@ package com.emart.emart.controllers.productImage;
 
 import com.emart.emart.dtos.productImageDtos.ProductImageDetailsDto;
 import com.emart.emart.dtos.productImageDtos.ProductImageDto;
+import com.emart.emart.models.ProductImage;
 import com.emart.emart.services.productImage.ProductImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,15 +71,39 @@ public class ProductImageControllerImpl implements ProductImageController {
     }
 
     @Override
-    @GetMapping("/all-images")
-    public ResponseEntity<Object> viewAllImagesByProductId(Long productId) {
+    @GetMapping("/all-image-details")
+    public ResponseEntity<Object> viewAllImageDetailsByProductId(Long productId) {
         try
         {
-            List<ProductImageDetailsDto> list = productImageService.viewAllImages(productId);
+            List<ProductImageDetailsDto> list = productImageService.viewAllImageDetails(productId);
             if (!list.isEmpty()){
                 logger.info("Image details list fetched successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseListDto("200 OK", "Image details list fetched successfully", list));
+            }
+            else {
+                logger.info("No images found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(convertToResponseMsgDto("404 NOT FOUND", "No images found"));
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("Error fetching image details",e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Error fetching image details"));
+        }
+    }
+
+    @Override
+    @GetMapping("/all-images")
+    public ResponseEntity<Object> viewAllImagesByProductId(Long productId) {
+        try
+        {
+            List<ProductImageDto> list = productImageService.viewAllImages(productId);
+            if (!list.isEmpty()){
+                logger.info("Images fetched successfully");
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(convertToResponseListDto("200 OK", "Images fetched successfully", list));
             }
             else {
                 logger.info("No images found");

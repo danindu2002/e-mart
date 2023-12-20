@@ -9,7 +9,8 @@ import java.util.List;
 public interface ProductImageService {
     int saveProductImage(ProductImageDto productImageDto);
     int deleteImage(Long imageId);
-    List<ProductImageDetailsDto> viewAllImages(Long productId);
+    List<ProductImageDetailsDto> viewAllImageDetails(Long productId);
+    List<ProductImageDto> viewAllImages(Long productId);
     ProductImageDto viewImage(Long imageId);
     ProductImageDto mapToImageDto(ProductImage productImage);
     ProductImageDetailsDto mapToImageDetailsDto(ProductImage productImage);
