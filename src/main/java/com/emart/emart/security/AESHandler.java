@@ -23,7 +23,6 @@ public class AESHandler {
     }
 
 
-
     public String decrypt(String ciphertext) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");

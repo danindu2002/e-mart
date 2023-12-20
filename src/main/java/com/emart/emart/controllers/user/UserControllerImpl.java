@@ -134,19 +134,23 @@ public class UserControllerImpl implements UserController{
     @Override
     @PostMapping("/authenticate-users")
     public ResponseEntity<Object> authenticateUser(String email, String password) {
-        User user = userService.authenticateUser(email, password);
-        if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
-            if (user != null) {
-                logger.info("Authenticated as "+ user.getRole() +" successfully");
-                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", UserMapper.userMapper.mapToUserDto(user)));
+        try {
+            User user = userService.authenticateUser(email, password);
+
+            if (userRepo.findByEmailAndDeletedIsFalse(email) != null){
+                if (user != null) {
+                    logger.info("Authenticated as "+ user.getRole() +" successfully");
+                    return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Authenticated as "+ user.getRole() +" successfully", UserMapper.userMapper.mapToUserDto(user)));
+                }
+                else {
+                    logger.info("Incorrect credentials");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseItemDto("404 Not Found", "Incorrect credentials", ""));
+                }
             }
-            else {
-                logger.info("Incorrect credentials");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseItemDto("404 Not Found", "Incorrect credentials", ""));
-            }
+            else throw new Exception();
         }
-        else {
-            logger.info("User not found, Incorrect email");
+        catch (Exception e) {
+            logger.info("User not found, Incorrect email", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "User not found, Incorrect email"));
         }
     }

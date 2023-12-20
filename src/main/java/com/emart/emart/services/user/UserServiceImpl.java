@@ -136,14 +136,27 @@ public class UserServiceImpl implements UserService
         }
     }
 
+
+    /* Password conversion
+        Creating user => plain text > base64(FE) > encryption(BE) > save
+        Updating user => plain text > base64(FE) > encryption(BE) > update
+        Authenticating user =>  plain text > base64(FE) > encryption(BE) > checking (encrypted saved password == encrypted user entered password)
+    */
+
+
     @Override
     public User authenticateUser(String email, String password) {
         User user = userRepo.findByEmailAndDeletedIsFalse(email);
-        String enteredPassword = aesConverter.convertToEntityAttribute(user.getPassword());
-        if (password.equals(enteredPassword)) {
-            logger.info("user authenticated");
+
+        // User entered base64 password to encrypted password conversion
+        String encryptedPassword = aesConverter.convertToDatabaseColumn(password);
+
+        // Checking that both encrypted passwords are same or not
+        if (user.getPassword().equals(encryptedPassword)) {
+            logger.info("User authenticated");
             return user;
         }
+        logger.error("Authentication failed");
         return null;
     }
 }
