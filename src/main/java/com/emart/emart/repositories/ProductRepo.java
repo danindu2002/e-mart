@@ -37,4 +37,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
 //            @Param("maxPrice") Double maxPrice,
 //            @Param("category") String category
 //    );
+
+    @Query("SELECT p.category AS category, COUNT(p) AS value FROM Product p WHERE p.deleted=false GROUP BY p.category")
+    List<Object[]> getEachProductCategoryCount();
 }
