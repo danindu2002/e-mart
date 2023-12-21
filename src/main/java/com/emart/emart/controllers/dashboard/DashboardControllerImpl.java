@@ -1,19 +1,15 @@
 package com.emart.emart.controllers.dashboard;
 
 import com.emart.emart.controllers.user.UserControllerImpl;
-import com.emart.emart.dtos.CheckoutDetailsDto;
 import com.emart.emart.dtos.EachProductCategoryCountDto;
 import com.emart.emart.dtos.MonthlyIncomeDto;
-import com.emart.emart.models.Checkout;
-import com.emart.emart.models.User;
+import com.emart.emart.dtos.TopCustomersDto;
 import com.emart.emart.services.dashboard.DashboardService;
-import com.emart.emart.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +24,6 @@ import static com.emart.emart.utility.Utility.convertToResponseMsgDto;
 @CrossOrigin
 @RequestMapping("api/v1/dashboard")
 public class DashboardControllerImpl implements DashboardController {
-
-    private final Logger logger = LoggerFactory.getLogger(UserControllerImpl.class);
 
     @Autowired
     private DashboardService dashboardService;
@@ -102,10 +96,10 @@ public class DashboardControllerImpl implements DashboardController {
 
     @GetMapping("/checkout")
     @Override
-    public ResponseEntity<Object> viewCheckoutDetails() {
-        List<CheckoutDetailsDto> checkoutDetails=dashboardService.viewCheckoutDetails();
-        if(checkoutDetails!=null) {
-        return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Checkout details fetched", checkoutDetails));
+    public ResponseEntity<Object> viewTopCustomers() {
+        List<TopCustomersDto> topCustomers=dashboardService.viewTopCustomers();
+        if(topCustomers!=null) {
+        return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Top customers details fetched", topCustomers));
     }else {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(convertToResponseMsgDto("500 Internal Server Error", "Unexpected error occurred"));
         }

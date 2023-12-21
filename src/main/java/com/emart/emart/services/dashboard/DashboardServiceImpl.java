@@ -2,7 +2,6 @@ package com.emart.emart.services.dashboard;
 
 import com.emart.emart.dtos.*;
 import com.emart.emart.mappers.CheckoutMapper;
-import com.emart.emart.models.Checkout;
 import com.emart.emart.repositories.CheckoutRepo;
 import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.repositories.UserRepo;
@@ -11,15 +10,10 @@ import com.emart.emart.services.user.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -34,8 +28,6 @@ public class DashboardServiceImpl implements DashboardService {
     private CheckoutRepo checkoutRepo;
     @Autowired
     private ProductRepo productRepo;
-    @Autowired
-    private CheckoutMapper checkoutMapper;
 
     @Override
     public int viewCustomerCount() {
@@ -117,7 +109,7 @@ public class DashboardServiceImpl implements DashboardService {
                 Integer month = (Integer) obj[0];
                 Double sumTotal = (Double) obj[1];
 
-                result.add(new MonthlyIncomeDto(sumTotal, Month.of(month).name()));
+                result.add(new MonthlyIncomeDto(sumTotal, Month.of(month).name().substring(0,3)));
             }
             logger.info("monthly income processed and returned");
             return result;
@@ -128,12 +120,24 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<CheckoutDetailsDto> viewCheckoutDetails() {
+    public List<TopCustomersDto> viewTopCustomers() {
         try {
-            logger.info("fetched checkout details");
-            return checkoutMapper.toDTOList(checkoutRepo.findAllByOrderedIsTrue());
+            List<Object[]> topCustomers = checkoutRepo.getTopCustomers();
+            List<TopCustomersDto> result = new ArrayList<>();
+
+            for (Object[] obj : topCustomers) {
+                Long userId = (Long) obj[0];
+                String email = (String) obj[1];
+                String contactNo = (String) obj[2];
+                String firstName = (String) obj[3];
+                Double totalOrdered = (Double) obj[4];
+
+                result.add(new TopCustomersDto(userId,email,contactNo,firstName,totalOrdered));
+            }
+            logger.info("top customers processed and returned");
+            return result;
         } catch (Exception e) {
-            logger.error("unexpected error occurred in viewCheckoutDetails", e);
+            logger.error("unexpected error occurred in viewTopCustomers", e);
             return null;
         }
     }
