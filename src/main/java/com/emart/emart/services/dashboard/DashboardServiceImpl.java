@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -102,15 +103,25 @@ public class DashboardServiceImpl implements DashboardService {
     public List<MonthlyIncomeDto> viewMonthlyIncome() {
         try {
             List<Integer> months = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-            List<Object[]> monthlyTotals = checkoutRepo.getMonthlyTotals(months);
+            List<Object[]> monthlyTotals = checkoutRepo.getMonthlyTotals();
             List<MonthlyIncomeDto> result = new ArrayList<>();
+
+            List<MonthlyIncomeDto> allMonths = Arrays.stream(Month.values())
+                    .map(month -> new MonthlyIncomeDto(0.0, month.name().substring(0, 3)))
+                    .toList();
 
             for (Object[] obj : monthlyTotals) {
                 Integer month = (Integer) obj[0];
                 Double sumTotal = (Double) obj[1];
 
-                result.add(new MonthlyIncomeDto(sumTotal, Month.of(month).name().substring(0,3)));
+                //replacing month,total if months are present in DB data
+                allMonths.stream()
+                        .filter(dto -> Month.of(month).name().substring(0, 3).equals(dto.getMonth()))
+                        .findFirst()
+                        .ifPresent(dto -> dto.setValue(sumTotal));
+
             }
+            result.addAll(allMonths);
             logger.info("monthly income processed and returned");
             return result;
         } catch (Exception e) {

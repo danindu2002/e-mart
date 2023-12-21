@@ -26,10 +26,15 @@ public interface CheckoutRepo extends JpaRepository<Checkout, Long> {
             "ORDER BY totalOrdered DESC")
     List<Object[]> getTopCustomers();
 
+//    @Query("SELECT MONTH(c.checkoutDate) AS month, SUM(c.total) AS sumTotal " +
+//            "FROM Checkout c " +
+//            "WHERE c.ordered = true AND MONTH(c.checkoutDate) IN :months " +
+//            "GROUP BY MONTH(c.checkoutDate)")
+
     @Query("SELECT MONTH(c.checkoutDate) AS month, SUM(c.total) AS sumTotal " +
             "FROM Checkout c " +
-            "WHERE c.ordered = true AND MONTH(c.checkoutDate) IN :months " +
+            "WHERE c.ordered = true AND YEAR(c.checkoutDate) = YEAR(CURRENT_DATE) " +
             "GROUP BY MONTH(c.checkoutDate)")
-    List<Object[]> getMonthlyTotals(@Param("months") List<Integer> months);
+    List<Object[]> getMonthlyTotals();
 
 }
