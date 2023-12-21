@@ -6,4 +6,6 @@ import lombok.Data;
 public class UserDashboardCheckoutDto {
     private String profilePhoto;
     private String firstName;
+    private String email;
+    private String contactNo;
 }

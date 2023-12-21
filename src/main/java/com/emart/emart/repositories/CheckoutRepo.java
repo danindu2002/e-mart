@@ -18,7 +18,13 @@ public interface CheckoutRepo extends JpaRepository<Checkout, Long> {
     @Query("SELECT COUNT(c) FROM Checkout c WHERE c.checkoutDate >= :date")
     Integer getDailyOrderCount(@Param("date") Date date);
 
-    List<Checkout> findAllByOrderedIsTrue();
+    @Query("SELECT u.userId, u.email, u.contactNo, u.firstName, SUM(c.total) AS totalOrdered " +
+            "FROM User u " +
+            "JOIN Checkout c ON u.userId = c.user.userId " +
+            "WHERE c.ordered = true " +
+            "GROUP BY u.userId, u.email, u.contactNo, u.firstName " +
+            "ORDER BY totalOrdered DESC")
+    List<Object[]> getTopCustomers();
 
     @Query("SELECT MONTH(c.checkoutDate) AS month, SUM(c.total) AS sumTotal " +
             "FROM Checkout c " +
