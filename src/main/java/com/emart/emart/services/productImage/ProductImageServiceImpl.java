@@ -114,6 +114,7 @@ public class ProductImageServiceImpl implements ProductImageService{
     @Override
     public ProductImageDto mapToImageDto(ProductImage productImage) {
         ProductImageDto dto = new ProductImageDto();
+        dto.setImageId(productImage.getImageId());
         dto.setImageName(productImage.getImageName());
         dto.setImage(convertDocumentToBase64(productImage.getImagePath()));
         dto.setProductId(productImage.getProduct().getProductId());
