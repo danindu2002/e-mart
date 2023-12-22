@@ -74,7 +74,7 @@ public class ProductControllerImpl implements ProductController{
             if (product == null) throw new Exception();
             else {
                 RefCategory category = refCategoryRepo.findByRefCategoryName(product.getCategory());
-                product.setCategory(category.getRefCategoryName());
+                product.setCategory(String.valueOf(category.getRefCategoryId()));
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product found", product));
             }
         }

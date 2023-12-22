@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.emart.emart.utility.Utility.*;
@@ -80,9 +82,10 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
                         .body(convertToResponseListDto("200 OK", "Document details list fetched successfully", list));
             }
             else {
+                List<ProductDocumentDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No documents found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "No documents found"));
+                        .body(convertToResponseListDto("404 NOT FOUND", "No documents found", emptyList));
             }
         }
         catch (Exception e)
