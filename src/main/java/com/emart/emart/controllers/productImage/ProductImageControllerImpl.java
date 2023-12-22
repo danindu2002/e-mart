@@ -109,9 +109,10 @@ public class ProductImageControllerImpl implements ProductImageController {
                         .body(convertToResponseListDto("200 OK", "Images fetched successfully", list));
             }
             else {
+                List<ProductImageDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No images found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "No images found"));
+                        .body(convertToResponseListDto("404 NOT FOUND", "No images found", emptyList));
             }
         }
         catch (Exception e)
