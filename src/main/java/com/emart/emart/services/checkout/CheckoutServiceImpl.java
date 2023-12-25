@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,29 +68,41 @@ public class CheckoutServiceImpl implements CheckoutService {
     }
 
     @Override
+    @Transactional
     public int updateCheckout(Checkout checkout, Long userId) {
-        User user = userRepo.findByUserIdAndDeletedIsFalse(userId);
-        Checkout checkout1 = checkoutRepo.findByUserAndOrderedIsFalse(user);
+        try {
+            User user = userRepo.findByUserIdAndDeletedIsFalse(userId);
+            Checkout checkout1 = checkoutRepo.findByUserAndOrderedIsFalse(user);
 
-        if (checkout1 != null) {
-            checkout1.setCheckoutDate(checkout.getCheckoutDate());
-            checkout1.setTotal(checkout.getTotal());
-            checkout1.setOrdered(checkout.getOrdered());
+            if (checkout1 != null) {
+                checkout1.setCheckoutDate(checkout.getCheckoutDate());
+                checkout1.setTotal(checkout.getTotal());
+                checkout1.setOrdered(checkout.getOrdered());
 
-            logger.info("Checkout updated as ordered");
-            checkoutRepo.save(checkout1);
+                logger.info("Checkout updated as ordered");
+                checkoutRepo.save(checkout1);
 
-            if (checkout1.getOrdered()) {
-                for (ProductCheckout productCheckout : checkout1.getProductCheckouts()) {
-                    Product product = productCheckout.getProduct();
-                    product.setQuantity(product.getQuantity() - productCheckout.getNoOfItems());
-                    productRepo.save(product);
+                if (checkout1.getOrdered()) {
+                    for (ProductCheckout productCheckout : checkout1.getProductCheckouts())
+                    {
+                        Product product = productCheckout.getProduct();
+                        if (product.getQuantity() >= productCheckout.getNoOfItems()) {
+                            product.setQuantity(product.getQuantity() - productCheckout.getNoOfItems());
+                            productRepo.save(product);
+                            logger.info("Product issued");
+                        }
+                        else throw new Exception("Unable to supply the requested amount from the product " + product.getProductName() + ", please try again");
+                    }
                 }
+                return 0;
+            } else {
+                logger.info("No active checkout found for the user");
+                return 1;
             }
-            return 0;
-        } else {
-            logger.info("No active checkout found for the user");
-            return 1;
+        }
+        catch (Exception e) {
+            logger.error("Unable to supply the requested amount", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 

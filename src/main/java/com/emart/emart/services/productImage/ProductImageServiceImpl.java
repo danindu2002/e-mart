@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static com.emart.emart.utility.Utility.convertDocumentToBase64;
@@ -37,6 +38,12 @@ public class ProductImageServiceImpl implements ProductImageService{
         Product product = productRepo.findByProductIdAndDeletedIsFalse(productImageDto.getProductId());
 
         if (product != null) {
+            // Validating image format
+            if (!isValidImageFormat(productImageDto.getImage())) {
+                logger.error("Invalid image format. Only image files are allowed");
+                return 1;
+            }
+
             // Saving the image
             String imageName = productImageDto.getImageName() + "_" + System.currentTimeMillis() + ".jpg";
 
@@ -55,7 +62,7 @@ public class ProductImageServiceImpl implements ProductImageService{
         }
         else {
             logger.error("product not found");
-            return 1;
+            return 2;
         }
     }
 
@@ -138,5 +145,45 @@ public class ProductImageServiceImpl implements ProductImageService{
             list.add( mapToImageDetailsDto(productImage) );
         }
         return list;
+    }
+
+    // Method to validate the base64 string as an image format
+    private boolean isValidImageFormat(String base64String) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+
+            // Checking for the magic bytes of various image formats
+            if (startsWithMagicBytes(decodedBytes, "ffd8ff") ||  // JPEG
+                    startsWithMagicBytes(decodedBytes, "89504e47") ||  // PNG
+                    startsWithMagicBytes(decodedBytes, "47494638") ||  // GIF
+                    startsWithMagicBytes(decodedBytes, "424d") ||  // BMP
+                    startsWithMagicBytes(decodedBytes, "49492a00") ||  // TIFF
+                    startsWithMagicBytes(decodedBytes, "4d4d002a")) {  // TIFF (big-endian)
+                logger.info("Validated as an image");
+                return true;
+            } else {
+                logger.error("Invalid image format. Only image files are allowed");
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Error validating image format", e);
+            return false;
+        }
+    }
+
+
+    // Helper method to check if the byte array starts with specific magic bytes
+    private boolean startsWithMagicBytes(byte[] bytes, String magicBytes) {
+        String hexPrefix = bytesToHex(bytes, magicBytes.length() / 2);
+        return hexPrefix.equalsIgnoreCase(magicBytes);
+    }
+
+    // Helper method to convert byte array to hex string
+    private String bytesToHex(byte[] bytes, int length) {
+        StringBuilder hexStringBuilder = new StringBuilder();
+        for (int i = 0; i < length && i < bytes.length; i++) {
+            hexStringBuilder.append(String.format("%02x", bytes[i]));
+        }
+        return hexStringBuilder.toString();
     }
 }

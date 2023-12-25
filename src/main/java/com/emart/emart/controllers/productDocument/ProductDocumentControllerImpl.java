@@ -30,10 +30,14 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     public ResponseEntity<Object> saveDocument(ProductDocumentDto productDocumentDto) {
         try
         {
-            if (productDocumentService.saveProductDocument(productDocumentDto) == 0){
+            if (productDocumentService.saveProductDocument(productDocumentDto) == 0) {
                 logger.info("document saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
+            }
+            else if (productDocumentService.saveProductDocument(productDocumentDto) == 1) {
+                logger.error("Invalid document type. Only PDF files are allowed");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid document type. Only PDF files are allowed"));
             }
             else {
                 logger.error("Product not found");
