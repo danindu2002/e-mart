@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Base64;
 
 import static com.emart.emart.utility.Utility.convertDocumentToBase64;
 import static com.emart.emart.utility.Utility.saveBase64DocumentToFile;
@@ -36,6 +40,12 @@ public class ProductDocumentServiceImpl implements ProductDocumentService{
         Product product = productRepo.findByProductIdAndDeletedIsFalse(productDocumentDto.getProductId());
 
         if (product != null) {
+            // Validating file type
+            if (!isValidPdf(productDocumentDto.getDocument())) {
+                logger.error("Invalid document type. Only PDF files are allowed");
+                return 1;
+            }
+
             // Saving the document
             String documentFileName = productDocumentDto.getDocumentName() + "_" + System.currentTimeMillis() + ".pdf";
 
@@ -55,7 +65,7 @@ public class ProductDocumentServiceImpl implements ProductDocumentService{
         }
         else {
             logger.error("product not found");
-            return 1;
+            return 2;
         }
     }
 
@@ -128,5 +138,22 @@ public class ProductDocumentServiceImpl implements ProductDocumentService{
             list.add( mapToDocumentDetailsDto( productDocument ) );
         }
         return list;
+    }
+
+    // Method to validate the file type as PDF
+    private boolean isValidPdf(String base64String) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+            File tempFile = File.createTempFile("tempFile", ".pdf");
+
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(decodedBytes);
+            }
+            String fileContents = new String(Files.readAllBytes(tempFile.toPath()));
+            return fileContents.startsWith("%PDF");
+        } catch (Exception e) {
+            logger.error("Error validating PDF file", e);
+            return false;
+        }
     }
 }

@@ -64,17 +64,28 @@ public class CheckoutControllerImpl implements CheckoutController {
     @PutMapping("/{userId}")
     public ResponseEntity<Object> updateCheckout(Checkout checkout, Long userId) {
         try {
-
             Long checkoutId = checkoutService.viewCheckout(userId).getCheckoutId();
             if (checkoutService.updateCheckout(checkout, userId) == 0) {
                 logger.info("checkout updated successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "Checkout updated successfully", checkoutService.viewCheckoutById(checkoutId)));
-
-            } else throw new Exception();
-        } catch (Exception e) {
-            logger.error("Checkout not found");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Checkout not found"));
+            }
+            else {
+                logger.error("No active checkout found for the user");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(convertToResponseMsgDto("404 NOT FOUND", "No active checkout found for the user"));
+            }
+        }
+        catch (Exception e) {
+            logger.error("Unable to supply the requested amount", e);
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.startsWith("Unable to supply the requested amount from the product")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(convertToResponseMsgDto("406 NOT ACCEPTABLE", errorMessage));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(convertToResponseMsgDto("400 Bad Request", "Checkout not found"));
+            }
         }
     }
 

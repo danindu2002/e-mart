@@ -33,10 +33,16 @@ public class UserControllerImpl implements UserController{
                 logger.info("User account created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "User account created", userService.viewUser(user.getUserId())));
-            } else if (userService.saveUser(user) == 1) {
+            }
+            else if (userService.saveUser(user) == 1) {
                 logger.info("Duplicate email found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate email found, please try again"));
-            } else {
+            }
+            else if (userService.saveUser(user) == 2) {
+                logger.info("Invalid contact number");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid contact number, please try again"));
+            }
+            else {
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
             }
@@ -100,7 +106,9 @@ public class UserControllerImpl implements UserController{
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
             } else {
-                throw new Exception();
+                logger.info("Invalid contact number");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid contact number, please try again"));
             }
         } catch (Exception e) {
             logger.error("User account not found", e);

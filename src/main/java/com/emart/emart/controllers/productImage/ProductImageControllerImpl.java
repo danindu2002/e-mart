@@ -32,10 +32,14 @@ public class ProductImageControllerImpl implements ProductImageController {
     public ResponseEntity<Object> saveImage(ProductImageDto productImageDto) {
         try
         {
-            if (productImageService.saveProductImage(productImageDto) == 0){
+            if (productImageService.saveProductImage(productImageDto) == 0) {
                 logger.info("image saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseMsgDto("200 OK", "Image saved successfully"));
+            }
+            else if (productImageService.saveProductImage(productImageDto) == 1) {
+                logger.error("Invalid image format. Only image files are allowed");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid image format. Only image files are allowed"));
             }
             else {
                 logger.error("Product not found");
