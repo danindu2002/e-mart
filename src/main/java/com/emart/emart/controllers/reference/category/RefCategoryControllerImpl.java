@@ -97,4 +97,13 @@ public class RefCategoryControllerImpl implements RefCategoryController{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Category not found"));
         }
     }
+
+    @GetMapping("/search-categories/{keyword}")
+    @Override
+    public ResponseEntity<Object> searchCategories(String keyword) {
+        if(!refCategoryService.searchCategories(keyword).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched categories found", refCategoryService.searchCategories(keyword)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No categories found"));
+    }
 }

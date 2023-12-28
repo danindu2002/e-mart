@@ -10,5 +10,5 @@ public interface RefCategoryService {
     List<RefCategory> viewAllCategories();
     int updateCategory(Long categoryId, RefCategory category);
     int deleteCategory(Long categoryId);
-
+    List<RefCategory> searchCategories(String keyword);
 }

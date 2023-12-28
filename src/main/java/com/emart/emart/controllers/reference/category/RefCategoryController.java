@@ -11,4 +11,5 @@ public interface RefCategoryController {
     ResponseEntity<Object> viewAllCategories();
     ResponseEntity<Object> updateCategory(@RequestBody RefCategory refCategory, @RequestParam Long categoryId);
     ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId);
+    ResponseEntity<Object> searchCategories(@PathVariable String keyword);
 }
