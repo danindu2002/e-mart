@@ -24,9 +24,15 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         if (category1 != null) return 1; // duplicate category
         else if (categoryByCode != null) return 2; // duplicate category code
         else {
-            logger.info("category saved");
-            refCategoryRepo.save(category);
-            return 0; // saved
+            if (!category.getRefCategoryName().trim().isBlank() && !category.getCategoryCode().trim().isBlank()) {
+                logger.info("category saved");
+                refCategoryRepo.save(category);
+                return 0; // saved
+            }
+            else {
+                logger.error("empty input");
+                return 3;
+            }
         }
     }
 
@@ -50,12 +56,18 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         if (category1 == null) return 1; // category not found
         else if(categoryByName != null && !categoryId.equals(categoryByName.getRefCategoryId())) return 2; // duplicate name
         else {
-            category1.setRefCategoryName(category.getRefCategoryName());
-            category1.setCategoryDescription(category.getCategoryDescription());
-            refCategoryRepo.save(category1);
+            if (!category.getRefCategoryName().trim().isBlank()) {
+                category1.setRefCategoryName(category.getRefCategoryName());
+                category1.setCategoryDescription(category.getCategoryDescription());
+                refCategoryRepo.save(category1);
 
-            logger.info("category updated");
-            return 0; // updated
+                logger.info("category updated");
+                return 0; // updated
+            }
+            else {
+                logger.error("empty input");
+                return 3;
+            }
         }
     }
 

@@ -124,23 +124,24 @@ public class ProductControllerImpl implements ProductController{
     public ResponseEntity<Object> updateProduct(Long productId, Product product) {
         try
         {
-            if(productService.updateProduct(productId, product) == 0)
-            {
+            if(productService.updateProduct(productId, product) == 0) {
                 logger.info("Product updated successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product updated successfully",
                         productService.viewProduct(productId)));
             }
-            else if(productService.updateProduct(productId, product) == 1)
-            {
+            else if(productService.updateProduct(productId, product) == 1) {
                 logger.info("Duplicate product code found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate product code found, please try again"));
             }
+            else if(productService.updateProduct(productId, product) == 2) {
+                logger.error("Product not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+            }
             else throw new Exception();
         }
-        catch (Exception e)
-        {
-            logger.error("Product not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+        catch (Exception e) {
+            logger.error("Error occurred");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("400 Bad Request", "Error occurred"));
         }
     }
 

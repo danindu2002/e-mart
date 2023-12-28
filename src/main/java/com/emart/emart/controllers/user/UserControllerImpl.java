@@ -42,10 +42,11 @@ public class UserControllerImpl implements UserController{
                 logger.info("Invalid contact number");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid contact number, please try again"));
             }
-            else {
+            else if (userService.saveUser(user) == 3) {
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
             }
+            else throw new Exception();
         } catch (Exception e) {
             logger.error("Failed to create the user account", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Failed to create the user account"));
@@ -105,11 +106,11 @@ public class UserControllerImpl implements UserController{
                 logger.info("Invalid email");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid email, please try again"));
-            } else {
+            } else if (userService.updateUser(userId, user, changePwd) == 3) {
                 logger.info("Invalid contact number");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 Not Acceptable", "Invalid contact number, please try again"));
-            }
+            } else throw new Exception();
         } catch (Exception e) {
             logger.error("User account not found", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

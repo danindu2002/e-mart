@@ -32,9 +32,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void saveProduct(Product product) {
-        product.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
-        logger.info("product saved");
-        productRepo.save(product);
+        if (!product.getProductCode().trim().isBlank() && !product.getProductName().trim().isBlank()) {
+            product.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
+            logger.info("product saved");
+            productRepo.save(product);
+        }
     }
 
     @Override
@@ -54,13 +56,6 @@ public class ProductServiceImpl implements ProductService {
         logger.info("products searched globally");
         return ProductMapper.productMapper.maptoProductDtoList(productRepo.search(keyword));
     }
-
-//    @Override
-//    public List<ProductDto> searchProductsByFilters(String category, Double minPrice, Double maxPrice) {
-//        String categoryName = refCategoryRepo.findByRefCategoryId(Long.valueOf(category)).getRefCategoryName();
-//        logger.info("products searched by filters");
-//        return ProductMapper.productMapper.maptoProductDtoList(productRepo.findByPriceAndCategory(minPrice, maxPrice, categoryName));
-//    }
 
     @Override
     public List<ProductDto> searchByPrice(Double minPrice, Double maxPrice) {
@@ -93,18 +88,21 @@ public class ProductServiceImpl implements ProductService {
             Product product1 = productRepo.findByProductCodeAndDeletedIsFalse(product.getProductCode());
             if (product1 == null || Objects.equals(product1.getProductId(), productId))
             {
-                updatedProduct.setProductName(product.getProductName());
-                updatedProduct.setDescription(product.getDescription());
-                updatedProduct.setQuantity(product.getQuantity());
-                updatedProduct.setRating(product.getRating());
-                updatedProduct.setPrice(product.getPrice());
-                updatedProduct.setSize(product.getSize());
-                updatedProduct.setColor(product.getColor());
-                updatedProduct.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
-                productRepo.save(updatedProduct);
+                if (!product.getProductName().trim().isBlank()) {
+                    updatedProduct.setProductName(product.getProductName());
+                    updatedProduct.setDescription(product.getDescription());
+                    updatedProduct.setQuantity(product.getQuantity());
+                    updatedProduct.setRating(product.getRating());
+                    updatedProduct.setPrice(product.getPrice());
+                    updatedProduct.setSize(product.getSize());
+                    updatedProduct.setColor(product.getColor());
+                    updatedProduct.setCategory(refCategoryRepo.findByRefCategoryId(Long.valueOf(product.getCategory())).getRefCategoryName());
+                    productRepo.save(updatedProduct);
 
-                logger.info("product updated");
-                return 0;
+                    logger.info("product updated");
+                    return 0;
+                }
+                else return 3;
             } else {
                 logger.info("duplicate product code found");
                 return 1;
@@ -144,21 +142,4 @@ public class ProductServiceImpl implements ProductService {
             return 0;
         }
     }
-
-    // Helper method to delete document file
-//    @Override
-//    public void deleteDocumentFile(String filePath)
-//    {
-//        try {
-//            // Delete the document file
-//            Files.deleteIfExists(Path.of(filePath));
-//
-//            // Delete the parent folder
-//            Files.deleteIfExists(Paths.get(filePath).getParent());
-//        }
-//        catch (IOException e) {
-//            logger.error("Error while deleting document file", e);
-//            throw new RuntimeException("Error while deleting document file", e);
-//        }
-//    }
 }
