@@ -10,8 +10,8 @@ public interface RefCategoryRepo extends JpaRepository<RefCategory, Long> {
 
     RefCategory findByRefCategoryId(Long refCategoryId);
     RefCategory findByRefCategoryName(String name);
+    RefCategory findByCategoryCode(String categoryCode);
 
     //count categories
     Integer countAllBy();
-    RefCategory findByCategoryCode(String categoryCode);
 }

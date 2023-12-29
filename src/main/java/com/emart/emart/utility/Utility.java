@@ -3,6 +3,7 @@ package com.emart.emart.utility;
 import com.emart.emart.dtos.responseDtos.ResponseItemDto;
 import com.emart.emart.dtos.responseDtos.ResponseListDto;
 import com.emart.emart.dtos.responseDtos.ResponseMsgDto;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

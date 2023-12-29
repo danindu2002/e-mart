@@ -1,6 +1,7 @@
 package com.emart.emart.services.reference.category;
 
 import com.emart.emart.models.reference.RefCategory;
+import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.repositories.reference.RefCategoryRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ public class RefCategoryServiceImpl implements RefCategoryService {
 
     @Autowired
     RefCategoryRepo refCategoryRepo;
+    @Autowired
+    ProductRepo productRepo;
     @Override
     public int saveCategory(RefCategory category) {
         RefCategory category1 = refCategoryRepo.findByRefCategoryName(category.getRefCategoryName());
@@ -25,8 +28,8 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         else if (categoryByCode != null) return 2; // duplicate category code
         else {
             if (!category.getRefCategoryName().trim().isBlank() && !category.getCategoryCode().trim().isBlank()) {
-                logger.info("category saved");
                 refCategoryRepo.save(category);
+                logger.info("category saved");
                 return 0; // saved
             }
             else {
@@ -76,9 +79,15 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         RefCategory category = refCategoryRepo.findByRefCategoryId(categoryId);
         if (category == null) return 1;
         else {
-            logger.info("category deleted");
-            refCategoryRepo.delete(category);
-            return 0;
+            if (!productRepo.searchByCategoryAndDeletedIsFalse(category.getRefCategoryName()).isEmpty()) {
+                logger.error("Unable to delete the category as there are products assigned to it");
+                return 2;
+            }
+            else {
+                logger.info("category deleted");
+                refCategoryRepo.delete(category);
+                return 0;
+            }
         }
     }
 }

@@ -11,8 +11,11 @@ import java.util.List;
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM Product p WHERE (p.productName LIKE %:keyword% OR p.description LIKE %:keyword% OR p.color = :keyword) AND p.deleted = false")
+    @Query("SELECT p FROM Product p WHERE (p.productName LIKE %:keyword% OR p.description LIKE %:keyword%) AND p.deleted = false")
     List<Product> search(@Param("keyword") String keyword);
+
+    @Query("SELECT p FROM Product p WHERE (p.productName LIKE %:keyword% OR p.category LIKE %:keyword%) AND p.deleted = false")
+    List<Product> productSearchForAdmin(@Param("keyword") String keyword);
 
     @Query("SELECT p FROM Product p WHERE p.price >= :minPrice AND p.price <= :maxPrice AND p.deleted = false")
     List<Product> searchByPrice(@Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice);

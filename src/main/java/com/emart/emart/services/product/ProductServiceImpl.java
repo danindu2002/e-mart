@@ -58,6 +58,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDto> searchProductsForAdmin(String keyword) {
+        logger.info("products searched for admin view");
+        return ProductMapper.productMapper.maptoProductDtoList(productRepo.productSearchForAdmin(keyword));
+    }
+
+    @Override
     public List<ProductDto> searchByPrice(Double minPrice, Double maxPrice) {
         logger.info("products searched by price");
         return ProductMapper.productMapper.maptoProductDtoList(productRepo.searchByPrice(minPrice, maxPrice));

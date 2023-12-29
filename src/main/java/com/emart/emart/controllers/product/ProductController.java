@@ -12,6 +12,7 @@ public interface ProductController{
     ResponseEntity<Object> viewById(@PathVariable Long productId);
     ResponseEntity<Object> viewByIdAndCategory(@PathVariable Long productId);
     ResponseEntity<Object> searchProducts(@PathVariable String keyword);
+    ResponseEntity<Object> searchProductsForAdmin(@PathVariable String keyword);
     ResponseEntity<Object> searchByPrice(@RequestParam Double minPrice, @RequestParam Double maxPrice);
     ResponseEntity<Object> searchByCategory(@PathVariable String category);
     ResponseEntity<Object> searchByPriceAndCategory(@RequestParam Double minPrice, @RequestParam Double maxPrice, @RequestParam String category);

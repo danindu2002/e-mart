@@ -93,6 +93,15 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
+    @GetMapping("/search-products-admin/{keyword}")
+    public ResponseEntity<Object> searchProductsForAdmin(String keyword) {
+        if(!productService.searchProductsForAdmin(keyword).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchProductsForAdmin(keyword)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
+    }
+
+    @Override
     @GetMapping("/search-price")
     public ResponseEntity<Object> searchByPrice(Double minPrice, Double maxPrice) {
         if(!productService.searchByPrice(minPrice, maxPrice).isEmpty()) {
