@@ -56,6 +56,15 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<Object> viewCategoryById(Long categoryId) {
+        if(refCategoryService.viewCategory(categoryId) != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Category found", refCategoryService.viewCategory(categoryId)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No categories found"));
+    }
+
+    @Override
     @GetMapping("/")
     public ResponseEntity<Object> viewAllCategories() {
         if(!refCategoryService.viewAllCategories().isEmpty()) {

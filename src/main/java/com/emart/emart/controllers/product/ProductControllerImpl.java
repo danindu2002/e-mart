@@ -3,6 +3,8 @@ package com.emart.emart.controllers.product;
 import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.models.Product;
 import com.emart.emart.repositories.UserRepo;
+import com.emart.emart.models.reference.RefCategory;
+import com.emart.emart.repositories.reference.RefCategoryRepo;
 import com.emart.emart.services.product.ProductService;
 import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ public class ProductControllerImpl implements ProductController{
     private ProductService productService;
     @Autowired
     private Utility utility;
+
 
     @Override
     @PostMapping("/{userId}")
@@ -68,6 +71,23 @@ public class ProductControllerImpl implements ProductController{
        catch (Exception e) {
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
        }
+    }
+
+    @Override
+    @GetMapping("/view-products-category/{productId}")
+    public ResponseEntity<Object> viewByIdAndCategory(Long productId) {
+        try {
+            ProductDto product = productService.viewProduct(productId);
+            if (product == null) throw new Exception();
+            else {
+                RefCategory category = refCategoryRepo.findByRefCategoryName(product.getCategory());
+                product.setCategory(String.valueOf(category.getRefCategoryId()));
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product found", product));
+            }
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
+        }
     }
 
     @Override

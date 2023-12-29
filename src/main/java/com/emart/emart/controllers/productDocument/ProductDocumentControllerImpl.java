@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.emart.emart.utility.Utility.*;
@@ -37,6 +39,10 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
                 logger.info("document saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
+            }
+            else if (productDocumentService.saveProductDocument(productDocumentDto) == 1) {
+                logger.error("Invalid document type. Only PDF files are allowed");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid document type. Only PDF files are allowed"));
             }
             else {
                 logger.error("Product not found");
@@ -92,9 +98,10 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
                         .body(convertToResponseListDto("200 OK", "Document details list fetched successfully", list));
             }
             else {
+                List<ProductDocumentDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No documents found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "No documents found"));
+                        .body(convertToResponseListDto("404 NOT FOUND", "No documents found", emptyList));
             }
         }
         catch (Exception e)

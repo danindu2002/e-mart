@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.emart.emart.utility.Utility.*;
@@ -34,6 +36,7 @@ public class ProductImageControllerImpl implements ProductImageController {
     public ResponseEntity<Object> saveImage(ProductImageDto productImageDto, Long userId) {
         try
         {
+
             if(!utility.authorization(userId)) {
             if (productImageService.saveProductImage(productImageDto) == 0){
                 logger.info("image saved successfully");
@@ -42,6 +45,10 @@ public class ProductImageControllerImpl implements ProductImageController {
             }else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
+            }
+            else if (productImageService.saveProductImage(productImageDto) == 1) {
+                logger.error("Invalid image format. Only image files are allowed");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid image format. Only image files are allowed"));
             }
             else {
                 logger.error("Product not found");
@@ -95,9 +102,10 @@ public class ProductImageControllerImpl implements ProductImageController {
                         .body(convertToResponseListDto("200 OK", "Image details list fetched successfully", list));
             }
             else {
+                List<ProductImageDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No images found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "No images found"));
+                        .body(convertToResponseListDto("404 NOT FOUND", "No images found", emptyList));
             }
         }
         catch (Exception e)
@@ -119,9 +127,10 @@ public class ProductImageControllerImpl implements ProductImageController {
                         .body(convertToResponseListDto("200 OK", "Images fetched successfully", list));
             }
             else {
+                List<ProductImageDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No images found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "No images found"));
+                        .body(convertToResponseListDto("404 NOT FOUND", "No images found", emptyList));
             }
         }
         catch (Exception e)
