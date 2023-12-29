@@ -108,20 +108,27 @@ public class RefCategoryControllerImpl implements RefCategoryController{
         try
         {
             if(utility.authorization(userId)) {
-            if(refCategoryService.deleteCategory(categoryId) == 0)
-            {
+            if(refCategoryService.deleteCategory(categoryId) == 0) {
                 logger.info("Category deleted successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Category deleted successfully"));
             }
-            else throw new Exception();
-            }else {
+            else if (refCategoryService.deleteCategory(categoryId) == 1) {
+                logger.error("Category not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Category not found"));
+            }
+            else {
+                logger.error("Unable to delete the category as there are products assigned to it");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized", "Unable to delete the category as there are products assigned to it"));
+             }
+            }
+              else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
         catch (Exception e)
         {
-            logger.error("Category not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Category not found"));
+            logger.error("Error occurred");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Error occurred"));
         }
     }
 

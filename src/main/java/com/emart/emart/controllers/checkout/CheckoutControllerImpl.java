@@ -5,6 +5,7 @@ import com.emart.emart.models.Checkout;
 import com.emart.emart.models.User;
 import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.checkout.CheckoutService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,25 +70,26 @@ public class CheckoutControllerImpl implements CheckoutController {
                 logger.info("checkout updated successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "Checkout updated successfully", checkoutService.viewCheckoutById(checkoutId)));
-            }
-            else {
+            } else {
                 logger.error("No active checkout found for the user");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(convertToResponseMsgDto("404 NOT FOUND", "No active checkout found for the user"));
             }
         }
         catch (Exception e) {
-            logger.error("Unable to supply the requested amount", e);
             String errorMessage = e.getMessage();
-            if (errorMessage != null && errorMessage.startsWith("Unable to supply the requested amount from the product")) {
+            if (errorMessage != null && errorMessage.startsWith(" ")) {
+                logger.error("Unable to supply the requested amount " + errorMessage);
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                         .body(convertToResponseMsgDto("406 NOT ACCEPTABLE", errorMessage));
             } else {
+                logger.error("Checkout not found");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(convertToResponseMsgDto("400 Bad Request", "Checkout not found"));
             }
         }
     }
+
 
     @Override
     @PostMapping("/products")

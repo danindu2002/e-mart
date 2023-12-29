@@ -100,6 +100,15 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
+    @GetMapping("/search-products-admin/{keyword}")
+    public ResponseEntity<Object> searchProductsForAdmin(String keyword) {
+        if(!productService.searchProductsForAdmin(keyword).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Searched products found", productService.searchProductsForAdmin(keyword)));
+        }
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No products found"));
+    }
+
+    @Override
     @GetMapping("/search-price")
     public ResponseEntity<Object> searchByPrice(Double minPrice, Double maxPrice) {
         if(!productService.searchByPrice(minPrice, maxPrice).isEmpty()) {
@@ -131,6 +140,7 @@ public class ProductControllerImpl implements ProductController{
     public ResponseEntity<Object> updateProduct(Long productId, Product product, Long userId) {
         try
         {
+
             if(utility.authorization(userId)) {
             if(productService.updateProduct(productId, product) == 0)
             {
@@ -138,20 +148,22 @@ public class ProductControllerImpl implements ProductController{
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseItemDto("200 OK", "Product updated successfully",
                         productService.viewProduct(productId)));
             }
-            else if(productService.updateProduct(productId, product) == 1)
-            {
+            else if(productService.updateProduct(productId, product) == 1) {
                 logger.info("Duplicate product code found");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate product code found, please try again"));
+            }
+            else if(productService.updateProduct(productId, product) == 2) {
+                logger.error("Product not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
             }
             else throw new Exception();
             }else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
-        catch (Exception e)
-        {
-            logger.error("Product not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+        catch (Exception e) {
+            logger.error("Error occurred");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("400 Bad Request", "Error occurred"));
         }
     }
 

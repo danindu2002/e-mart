@@ -1,6 +1,7 @@
 package com.emart.emart.services.reference.category;
 
 import com.emart.emart.models.reference.RefCategory;
+import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.repositories.reference.RefCategoryRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ public class RefCategoryServiceImpl implements RefCategoryService {
 
     @Autowired
     RefCategoryRepo refCategoryRepo;
+    @Autowired
+    ProductRepo productRepo;
     @Override
     public int saveCategory(RefCategory category) {
         RefCategory category1 = refCategoryRepo.findByRefCategoryName(category.getRefCategoryName());
@@ -24,9 +27,15 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         if (category1 != null) return 1; // duplicate category
         else if (categoryByCode != null) return 2; // duplicate category code
         else {
-            logger.info("category saved");
-            refCategoryRepo.save(category);
-            return 0; // saved
+            if (!category.getRefCategoryName().trim().isBlank() && !category.getCategoryCode().trim().isBlank()) {
+                refCategoryRepo.save(category);
+                logger.info("category saved");
+                return 0; // saved
+            }
+            else {
+                logger.error("empty input");
+                return 3;
+            }
         }
     }
 
@@ -50,12 +59,18 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         if (category1 == null) return 1; // category not found
         else if(categoryByName != null && !categoryId.equals(categoryByName.getRefCategoryId())) return 2; // duplicate name
         else {
-            category1.setRefCategoryName(category.getRefCategoryName());
-            category1.setCategoryDescription(category.getCategoryDescription());
-            refCategoryRepo.save(category1);
+            if (!category.getRefCategoryName().trim().isBlank()) {
+                category1.setRefCategoryName(category.getRefCategoryName());
+                category1.setCategoryDescription(category.getCategoryDescription());
+                refCategoryRepo.save(category1);
 
-            logger.info("category updated");
-            return 0; // updated
+                logger.info("category updated");
+                return 0; // updated
+            }
+            else {
+                logger.error("empty input");
+                return 3;
+            }
         }
     }
 
@@ -64,9 +79,15 @@ public class RefCategoryServiceImpl implements RefCategoryService {
         RefCategory category = refCategoryRepo.findByRefCategoryId(categoryId);
         if (category == null) return 1;
         else {
-            logger.info("category deleted");
-            refCategoryRepo.delete(category);
-            return 0;
+            if (!productRepo.searchByCategoryAndDeletedIsFalse(category.getRefCategoryName()).isEmpty()) {
+                logger.error("Unable to delete the category as there are products assigned to it");
+                return 2;
+            }
+            else {
+                logger.info("category deleted");
+                refCategoryRepo.delete(category);
+                return 0;
+            }
         }
     }
 

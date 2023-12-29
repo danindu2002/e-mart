@@ -11,6 +11,7 @@ import com.emart.emart.repositories.CheckoutRepo;
 import com.emart.emart.repositories.ProductCheckoutRepo;
 import com.emart.emart.repositories.ProductRepo;
 import com.emart.emart.repositories.UserRepo;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,7 @@ public class CheckoutServiceImpl implements CheckoutService {
                 checkoutRepo.save(checkout1);
 
                 if (checkout1.getOrdered()) {
+                    List<String> unIssuedProductNames = new ArrayList<>();
                     for (ProductCheckout productCheckout : checkout1.getProductCheckouts())
                     {
                         Product product = productCheckout.getProduct();
@@ -91,7 +93,13 @@ public class CheckoutServiceImpl implements CheckoutService {
                             productRepo.save(product);
                             logger.info("Product issued");
                         }
-                        else throw new Exception("Unable to supply the requested amount from the product " + product.getProductName() + ", please try again");
+                        else {
+                            unIssuedProductNames.add(product.getProductName());
+                        }
+                    }
+                    if (!unIssuedProductNames.isEmpty()) {
+                        logger.error("Unable to supply the requested amount " + String.join(", ", unIssuedProductNames));
+                        throw new Exception(" " + String.join(", ", unIssuedProductNames));
                     }
                 }
                 return 0;
@@ -101,7 +109,6 @@ public class CheckoutServiceImpl implements CheckoutService {
             }
         }
         catch (Exception e) {
-            logger.error("Unable to supply the requested amount", e);
             throw new RuntimeException(e.getMessage());
         }
     }

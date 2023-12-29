@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService
-{
+public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
@@ -27,33 +26,35 @@ public class UserServiceImpl implements UserService
 
     @Override
     public int saveUser(User user) {
-        try{
-            if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
-            {
-                if(user.getContactNo().matches("^\\+?\\d{10,}$"))
-                {
-                    if (userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null) {
-                        user.setRole(refRoleRepo.findRefRoleByRefRoleId(Long.parseLong(user.getRole())).getRefRoleName());
-                        user.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
+        try {
+            if (!user.getFirstName().trim().isBlank() && !user.getLastName().trim().isBlank() && !user.getEmail().trim().isBlank()
+                    && !user.getAddress().trim().isBlank() && !user.getPassword().trim().isBlank()) {
+                if (user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                    if (user.getContactNo().matches("^\\+?\\d{10,}$")) {
+                        if (userRepo.findByEmailAndDeletedIsFalse(user.getEmail()) == null) {
+                            user.setRole(refRoleRepo.findRefRoleByRefRoleId(Long.parseLong(user.getRole())).getRefRoleName());
+                            user.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
 
-                        userRepo.save(user);
-                        logger.info("user saved");
-                        return 0;
+                            userRepo.save(user);
+                            logger.info("user saved");
+                            return 0;
+                        } else {
+                            logger.info("duplicate email found");
+                            return 1;
+                        }
                     } else {
-                        logger.info("duplicate email found");
-                        return 1;
+                        logger.error("Invalid contact number");
+                        return 2;
                     }
-                }
-                else {
-                    logger.error("Invalid contact number");
-                    return 2;
+                } else {
+                    logger.info("invalid email");
+                    return 3;
                 }
             } else {
-                logger.info("invalid email");
-                return 3;
+                logger.error("empty inputs");
+                return 5;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return 4;
         }
     }
@@ -89,40 +90,42 @@ public class UserServiceImpl implements UserService
         User updatedUser = userRepo.findByUserIdAndDeletedIsFalse(userId);
         if (updatedUser == null) {
             logger.info("User not found");
-            return 3;
-        }
-        else
-        {
-            if(user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
+            return 4;
+        } else {
+            if (!user.getFirstName().trim().isBlank() && !user.getLastName().trim().isBlank() && !user.getEmail().trim().isBlank()
+                    && !user.getAddress().trim().isBlank())
             {
-                if(user.getContactNo().matches("^\\+?\\d{10,}$"))
-                {
-                    User user1 = userRepo.findByEmailAndDeletedIsFalse(user.getEmail());
-                    if (user1 == null || user1.getUserId() == userId) {
-                        updatedUser.setFirstName(user.getFirstName());
-                        updatedUser.setLastName(user.getLastName());
-                        updatedUser.setEmail(user.getEmail());
-                        updatedUser.setContactNo(user.getContactNo());
-                        updatedUser.setAddress(user.getAddress());
-                        if (changePwd)
-                            updatedUser.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
-                        if (user.getProfilePhoto() != null) updatedUser.setProfilePhoto(user.getProfilePhoto());
-                        userRepo.save(updatedUser);
+                if (user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                    if (user.getContactNo().matches("^\\+?\\d{10,}$")) {
+                        User user1 = userRepo.findByEmailAndDeletedIsFalse(user.getEmail());
+                        if (user1 == null || user1.getUserId() == userId) {
+                            updatedUser.setFirstName(user.getFirstName());
+                            updatedUser.setLastName(user.getLastName());
+                            updatedUser.setEmail(user.getEmail());
+                            updatedUser.setContactNo(user.getContactNo());
+                            updatedUser.setAddress(user.getAddress());
+                            if (changePwd)
+                                updatedUser.setPassword(aesConverter.convertToDatabaseColumn(user.getPassword()));
+                            if (user.getProfilePhoto() != null) updatedUser.setProfilePhoto(user.getProfilePhoto());
+                            userRepo.save(updatedUser);
 
-                        logger.info("User updated");
-                        return 0;
+                            logger.info("User updated");
+                            return 0;
+                        } else {
+                            logger.info("Duplicate email found");
+                            return 1;
+                        }
                     } else {
-                        logger.info("Duplicate email found");
-                        return 1;
+                        logger.info("invalid contact number");
+                        return 3;
                     }
                 } else {
-                    logger.info("invalid contact number");
-                    return 3;
+                    logger.info("invalid email");
+                    return 2;
                 }
-            }
-            else {
-                logger.info("invalid email");
-                return 2;
+            } else {
+                logger.error("empty inputs");
+                return 5;
             }
         }
     }
@@ -130,7 +133,7 @@ public class UserServiceImpl implements UserService
     @Override
     public int deleteUser(long userId) {
         User deletedUser = userRepo.findByUserIdAndDeletedIsFalse(userId);
-        if(deletedUser == null) {
+        if (deletedUser == null) {
             logger.error("user not found");
             return 1;
         }
@@ -151,7 +154,6 @@ public class UserServiceImpl implements UserService
         Updating user => plain text > base64(FE) > encryption(BE) > update
         Authenticating user =>  plain text > base64(FE) > encryption(BE) > checking (encrypted saved password == encrypted user entered password)
     */
-
 
     @Override
     public User authenticateUser(String email, String password) {

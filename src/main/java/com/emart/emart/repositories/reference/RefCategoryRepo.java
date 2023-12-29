@@ -14,10 +14,10 @@ public interface RefCategoryRepo extends JpaRepository<RefCategory, Long> {
 
     RefCategory findByRefCategoryId(Long refCategoryId);
     RefCategory findByRefCategoryName(String name);
+    RefCategory findByCategoryCode(String categoryCode);
 
     //count categories
     Integer countAllBy();
-    RefCategory findByCategoryCode(String categoryCode);
 
     @Query("SELECT r FROM RefCategory r WHERE (r.categoryCode LIKE %:keyword% OR r.categoryDescription LIKE %:keyword% OR r.refCategoryName LIKE %:keyword%)")
     List<RefCategory> searchCategories(@Param("keyword") String keyword);
