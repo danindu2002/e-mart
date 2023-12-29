@@ -1,7 +1,9 @@
 package com.emart.emart.controllers.reference.category;
 
 import com.emart.emart.models.reference.RefCategory;
+import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.reference.category.RefCategoryService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,17 @@ public class RefCategoryControllerImpl implements RefCategoryController{
 
     @Autowired
     RefCategoryService refCategoryService;
+    @Autowired
+    private Utility utility;
+    @Autowired
+    UserRepo userRepo;
 
     @Override
-    @PostMapping("/")
-    public ResponseEntity<Object> createCategory(RefCategory refCategory) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Object> createCategory(RefCategory refCategory, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if (refCategoryService.saveCategory(refCategory) == 0) {
                 logger.info("category created successfully");
                 return ResponseEntity.status(HttpStatus.OK)
@@ -37,6 +44,9 @@ public class RefCategoryControllerImpl implements RefCategoryController{
                         .body(convertToResponseMsgDto("400 Bad Request", "Duplicate category code found"));
             }
             else throw new Exception();
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {
@@ -55,10 +65,11 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
-    @PutMapping("/")
-    public ResponseEntity<Object> updateCategory(RefCategory refCategory, Long categoryId) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateCategory(RefCategory refCategory, Long categoryId, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if(refCategoryService.updateCategory(categoryId, refCategory) == 0)
             {
                 logger.info("Category updated successfully");
@@ -71,6 +82,9 @@ public class RefCategoryControllerImpl implements RefCategoryController{
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Duplicate category name found"));
             }
             else throw new Exception();
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {
@@ -80,16 +94,20 @@ public class RefCategoryControllerImpl implements RefCategoryController{
     }
 
     @Override
-    @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Object> deleteCategory(Long categoryId) {
+    @DeleteMapping("/{categoryId}/{userId}")
+    public ResponseEntity<Object> deleteCategory(Long categoryId, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if(refCategoryService.deleteCategory(categoryId) == 0)
             {
                 logger.info("Category deleted successfully");
                 return ResponseEntity.status(HttpStatus.OK).body(convertToResponseMsgDto("200 OK", "Category deleted successfully"));
             }
             else throw new Exception();
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {

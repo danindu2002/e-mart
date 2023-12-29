@@ -19,7 +19,7 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)

@@ -3,8 +3,11 @@ package com.emart.emart.utility;
 import com.emart.emart.dtos.responseDtos.ResponseItemDto;
 import com.emart.emart.dtos.responseDtos.ResponseListDto;
 import com.emart.emart.dtos.responseDtos.ResponseMsgDto;
+import com.emart.emart.repositories.UserRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,8 +17,14 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 
+@Component
 public class Utility {
     private static final Logger logger = LoggerFactory.getLogger(Utility.class);
+    private final UserRepo userRepo;
+    @Autowired
+    public Utility(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     // Methods for defining response objects
     public static ResponseMsgDto convertToResponseMsgDto(String status, String description) {
@@ -68,5 +77,9 @@ public class Utility {
             throw new RuntimeException("Error while converting document to base64", e);
         }
         return Base64.getEncoder().encodeToString(documentBytes);
+    }
+
+    public boolean authorization(Long userId){
+        return userRepo.existsByUserIdAndRoleEqualsIgnoreCaseAndDeletedIsFalse(userId,"admin");
     }
 }

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface RefCategoryController {
-    ResponseEntity<Object> createCategory(@RequestBody RefCategory refCategory);
+    ResponseEntity<Object> createCategory(@RequestBody RefCategory refCategory, @PathVariable Long userId);
     ResponseEntity<Object> viewAllCategories();
-    ResponseEntity<Object> updateCategory(@RequestBody RefCategory refCategory, @RequestParam Long categoryId);
-    ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId);
+    ResponseEntity<Object> updateCategory(@RequestBody RefCategory refCategory, @RequestParam Long categoryId, @PathVariable Long userId);
+    ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId, @PathVariable Long userId);
     ResponseEntity<Object> searchCategories(@PathVariable String keyword);
 }

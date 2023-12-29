@@ -2,7 +2,9 @@ package com.emart.emart.controllers.product;
 
 import com.emart.emart.dtos.productCheckoutDtos.ProductDto;
 import com.emart.emart.models.Product;
+import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.product.ProductService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +22,29 @@ public class ProductControllerImpl implements ProductController{
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private Utility utility;
 
     @Override
-    @PostMapping("/")
-    public ResponseEntity<Object> createProduct(Product product) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Object> createProduct(Product product, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             productService.saveProduct(product);
             logger.info("product created successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(convertToResponseItemDto("200 OK", "Product created successfully",productService.viewProduct(product.getProductId())));
+        }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {
             logger.error("Duplicate product code found",e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Duplicate product code found"));
         }
-    }
+        }
 
     @Override
     @GetMapping("/view-products")
@@ -99,10 +107,11 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @PutMapping("/{productId}")
-    public ResponseEntity<Object> updateProduct(Long productId, Product product) {
+    @PutMapping("/{productId}/{userId}")
+    public ResponseEntity<Object> updateProduct(Long productId, Product product, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if(productService.updateProduct(productId, product) == 0)
             {
                 logger.info("Product updated successfully");
@@ -115,6 +124,9 @@ public class ProductControllerImpl implements ProductController{
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 Not Acceptable", "Duplicate product code found, please try again"));
             }
             else throw new Exception();
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {
@@ -124,10 +136,11 @@ public class ProductControllerImpl implements ProductController{
     }
 
     @Override
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<Object> deleteProduct(Long productId) {
+    @DeleteMapping("/{productId}/{userId}")
+    public ResponseEntity<Object> deleteProduct(Long productId, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if (productService.deleteProduct(productId) == 0)
             {
                 logger.info("Product deleted");
@@ -137,6 +150,9 @@ public class ProductControllerImpl implements ProductController{
             {
                 logger.error("Product not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "Product not found"));
+            }
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
         catch (Exception e)
