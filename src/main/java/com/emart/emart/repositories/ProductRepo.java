@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
+
     @Query("SELECT p FROM Product p WHERE (p.productName LIKE %:keyword% OR p.description LIKE %:keyword%) AND p.deleted = false")
     List<Product> search(@Param("keyword") String keyword);
 

@@ -3,7 +3,9 @@ package com.emart.emart.controllers.productImage;
 import com.emart.emart.dtos.productImageDtos.ProductImageDetailsDto;
 import com.emart.emart.dtos.productImageDtos.ProductImageDto;
 import com.emart.emart.models.ProductImage;
+import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.productImage.ProductImageService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +28,23 @@ public class ProductImageControllerImpl implements ProductImageController {
 
     @Autowired
     private ProductImageService productImageService;
+    @Autowired
+    private Utility utility;
 
     @Override
-    @PostMapping("/")
-    public ResponseEntity<Object> saveImage(ProductImageDto productImageDto) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Object> saveImage(ProductImageDto productImageDto, Long userId) {
         try
         {
-            if (productImageService.saveProductImage(productImageDto) == 0) {
+
+            if(!utility.authorization(userId)) {
+            if (productImageService.saveProductImage(productImageDto) == 0){
                 logger.info("image saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseMsgDto("200 OK", "Image saved successfully"));
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
             }
             else if (productImageService.saveProductImage(productImageDto) == 1) {
                 logger.error("Invalid image format. Only image files are allowed");
@@ -44,6 +53,7 @@ public class ProductImageControllerImpl implements ProductImageController {
             else {
                 logger.error("Product not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
+
             }
         }
         catch (Exception e)
@@ -54,10 +64,11 @@ public class ProductImageControllerImpl implements ProductImageController {
     }
 
     @Override
-    @DeleteMapping("/")
-    public ResponseEntity<Object> deleteImage(Long imageId) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> deleteImage(Long imageId, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if (productImageService.deleteImage(imageId) == 0){
                 logger.info("image deleted successfully");
                 return ResponseEntity.status(HttpStatus.OK)
@@ -67,6 +78,9 @@ public class ProductImageControllerImpl implements ProductImageController {
                 logger.info("image not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(convertToResponseMsgDto("404 NOT FOUND", "Image not found"));
+            }
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
         catch (Exception e)
