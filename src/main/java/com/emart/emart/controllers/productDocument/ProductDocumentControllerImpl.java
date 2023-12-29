@@ -21,7 +21,7 @@ import static com.emart.emart.utility.Utility.*;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/documents")
-public class ProductDocumentControllerImpl implements  ProductDocumentController{
+public class ProductDocumentControllerImpl implements ProductDocumentController {
     private final Logger logger = LoggerFactory.getLogger(ProductDocumentControllerImpl.class);
 
     @Autowired
@@ -32,29 +32,24 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     @Override
     @PostMapping("/{userId}")
     public ResponseEntity<Object> saveDocument(ProductDocumentDto productDocumentDto, Long userId) {
-        try
-        {
-            if(utility.authorization(userId)) {
-            if (productDocumentService.saveProductDocument(productDocumentDto) == 0){
-                logger.info("document saved successfully");
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
-            }
-            else if (productDocumentService.saveProductDocument(productDocumentDto) == 1) {
-                logger.error("Invalid document type. Only PDF files are allowed");
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid document type. Only PDF files are allowed"));
-            }
-            else {
-                logger.error("Product not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
-            }
-            }else {
+        try {
+            if (utility.authorization(userId)) {
+                if (productDocumentService.saveProductDocument(productDocumentDto) == 0) {
+                    logger.info("document saved successfully");
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
+                } else if (productDocumentService.saveProductDocument(productDocumentDto) == 1) {
+                    logger.error("Invalid document type. Only PDF files are allowed");
+                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid document type. Only PDF files are allowed"));
+                } else {
+                    logger.error("Product not found");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
+                }
+            } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
-        }
-        catch (Exception e)
-        {
-            logger.error("Error saving the document",e);
+        } catch (Exception e) {
+            logger.error("Error saving the document", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Error saving the document"));
         }
     }
@@ -62,26 +57,22 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     @Override
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteDocument(Long documentId, Long userId) {
-        try
-        {
-            if(utility.authorization(userId)) {
-            if (productDocumentService.deleteDocument(documentId) == 0){
-                logger.info("document deleted successfully");
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseMsgDto("200 OK", "Document deleted successfully"));
-            }
-            else {
-                logger.info("document not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(convertToResponseMsgDto("404 NOT FOUND", "Document not found"));
-            }
-            }else {
+        try {
+            if (utility.authorization(userId)) {
+                if (productDocumentService.deleteDocument(documentId) == 0) {
+                    logger.info("document deleted successfully");
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(convertToResponseMsgDto("200 OK", "Document deleted successfully"));
+                } else {
+                    logger.info("document not found");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(convertToResponseMsgDto("404 NOT FOUND", "Document not found"));
+                }
+            } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
-        }
-        catch (Exception e)
-        {
-            logger.error("Error deleting the document",e);
+        } catch (Exception e) {
+            logger.error("Error deleting the document", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Error deleting the document"));
         }
     }
@@ -89,24 +80,20 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     @Override
     @GetMapping("/all-documents")
     public ResponseEntity<Object> viewAllDocumentsByProductId(Long productId) {
-        try
-        {
+        try {
             List<ProductDocumentDetailsDto> list = productDocumentService.viewAllDocuments(productId);
-            if (!list.isEmpty()){
+            if (!list.isEmpty()) {
                 logger.info("Document details list fetched successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseListDto("200 OK", "Document details list fetched successfully", list));
-            }
-            else {
+            } else {
                 List<ProductDocumentDetailsDto> emptyList = new ArrayList<>();
                 logger.info("No documents found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(convertToResponseListDto("404 NOT FOUND", "No documents found", emptyList));
             }
-        }
-        catch (Exception e)
-        {
-            logger.error("Error fetching document details",e);
+        } catch (Exception e) {
+            logger.error("Error fetching document details", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Error fetching document details"));
         }
     }
@@ -114,23 +101,19 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     @Override
     @GetMapping("/")
     public ResponseEntity<Object> viewDocument(Long documentId) {
-        try
-        {
+        try {
             ProductDocumentDto productDocumentDto = productDocumentService.viewDocument(documentId);
-            if (productDocumentDto != null){
+            if (productDocumentDto != null) {
                 logger.info("Document fetched successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseItemDto("200 OK", "Document fetched successfully", productDocumentDto));
-            }
-            else {
+            } else {
                 logger.info("No documents found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(convertToResponseMsgDto("404 NOT FOUND", "No documents found"));
             }
-        }
-        catch (Exception e)
-        {
-            logger.error("Error fetching document",e);
+        } catch (Exception e) {
+            logger.error("Error fetching document", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(convertToResponseMsgDto("400 Bad Request", "Error fetching document"));
         }
     }

@@ -37,23 +37,23 @@ public class ProductImageControllerImpl implements ProductImageController {
         try
         {
 
-            if(!utility.authorization(userId)) {
-            if (productImageService.saveProductImage(productImageDto) == 0){
-                logger.info("image saved successfully");
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(convertToResponseMsgDto("200 OK", "Image saved successfully"));
-            }else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
-            }
-            }
-            else if (productImageService.saveProductImage(productImageDto) == 1) {
-                logger.error("Invalid image format. Only image files are allowed");
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid image format. Only image files are allowed"));
+            if(utility.authorization(userId)) {
+                if (productImageService.saveProductImage(productImageDto) == 0) {
+                    logger.info("image saved successfully");
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(convertToResponseMsgDto("200 OK", "Image saved successfully"));
+                }
+                else if (productImageService.saveProductImage(productImageDto) == 1) {
+                    logger.error("Invalid image format. Only image files are allowed");
+                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(convertToResponseMsgDto("406 NOT ACCEPTABLE", "Invalid image format. Only image files are allowed"));
+                }
+                else {
+                    logger.error("Product not found");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
+                }
             }
             else {
-                logger.error("Product not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
-
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
         catch (Exception e)
