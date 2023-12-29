@@ -69,4 +69,9 @@ public class RefCategoryServiceImpl implements RefCategoryService {
             return 0;
         }
     }
+
+    public List<RefCategory> searchCategories(String keyword) {
+        logger.info("categories searched globally");
+        return refCategoryRepo.searchCategories(keyword);
+    }
 }

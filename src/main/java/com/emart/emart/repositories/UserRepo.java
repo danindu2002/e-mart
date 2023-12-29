@@ -27,4 +27,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     //getCustomerCount
     Integer countAllByDeletedIsFalseAndRoleIsContainingIgnoreCase(String role);
+
+    Boolean existsByUserIdAndRoleEqualsIgnoreCaseAndDeletedIsFalse(Long adminId,String role);
 }

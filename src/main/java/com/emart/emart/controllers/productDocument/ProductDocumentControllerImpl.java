@@ -2,7 +2,9 @@ package com.emart.emart.controllers.productDocument;
 
 import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDetailsDto;
 import com.emart.emart.dtos.productDocumentDtos.ProductDocumentDto;
+import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.productDocument.ProductDocumentService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,16 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
 
     @Autowired
     private ProductDocumentService productDocumentService;
+    @Autowired
+    private Utility utility;
 
     @Override
-    @PostMapping("/")
-    public ResponseEntity<Object> saveDocument(ProductDocumentDto productDocumentDto) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<Object> saveDocument(ProductDocumentDto productDocumentDto, Long userId) {
         try
         {
-            if (productDocumentService.saveProductDocument(productDocumentDto) == 0) {
+            if(utility.authorization(userId)) {
+            if (productDocumentService.saveProductDocument(productDocumentDto) == 0){
                 logger.info("document saved successfully");
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(convertToResponseMsgDto("200 OK", "Document saved successfully"));
@@ -43,6 +48,9 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
                 logger.error("Product not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 NOT FOUND", "Product not found"));
             }
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+            }
         }
         catch (Exception e)
         {
@@ -52,10 +60,11 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
     }
 
     @Override
-    @DeleteMapping("/")
-    public ResponseEntity<Object> deleteDocument(Long documentId) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> deleteDocument(Long documentId, Long userId) {
         try
         {
+            if(utility.authorization(userId)) {
             if (productDocumentService.deleteDocument(documentId) == 0){
                 logger.info("document deleted successfully");
                 return ResponseEntity.status(HttpStatus.OK)
@@ -65,6 +74,9 @@ public class ProductDocumentControllerImpl implements  ProductDocumentController
                 logger.info("document not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(convertToResponseMsgDto("404 NOT FOUND", "Document not found"));
+            }
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
             }
         }
         catch (Exception e)

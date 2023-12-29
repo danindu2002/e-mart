@@ -5,6 +5,7 @@ import com.emart.emart.mappers.UserMapper;
 import com.emart.emart.models.User;
 import com.emart.emart.repositories.UserRepo;
 import com.emart.emart.services.user.UserService;
+import com.emart.emart.utility.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class UserControllerImpl implements UserController{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private Utility utility;
     @Autowired
     private UserRepo userRepo;
 
@@ -52,13 +55,17 @@ public class UserControllerImpl implements UserController{
         }
     }
     @Override
-    @GetMapping("/search-users")
-    public ResponseEntity<Object> searchUser(String keyword, Long role) {
+    @GetMapping("/search-users/{userId}")
+    public ResponseEntity<Object> searchUser(String keyword, Long role, Long userId) {
+        if(utility.authorization(userId)) {
         if(!userService.searchUser(keyword, role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.searchUser(keyword, role)));
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
-    }
+        }else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+        }
+        }
 
     @Override
     @GetMapping("/view-users/{userId}")
@@ -71,21 +78,29 @@ public class UserControllerImpl implements UserController{
     }
 
     @Override
-    @GetMapping("/view-user-roles/{role}")
-    public ResponseEntity<Object> viewAllUsers(Long role) {
+    @GetMapping("/view-user-roles/{role}/{userId}")
+    public ResponseEntity<Object> viewAllUsers(Long role,Long userId) {
+        if(utility.authorization(userId)) {
         if(!userService.viewAllUsers(role).isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "Users found", userService.viewAllUsers(role)));
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
-    }
+        }else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
+        }
+        }
 
     @Override
-    @GetMapping("/view-users")
-    public ResponseEntity<Object> viewAll() {
-        if(!userService.viewAll().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
+    @GetMapping("/view-All-users/{userId}")
+    public ResponseEntity<Object> viewAll(@PathVariable Long userId) {
+        if(utility.authorization(userId)) {
+            if (!userService.viewAll().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(convertToResponseListDto("200 OK", "All users found", userService.viewAll()));
+            } else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
+        }else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(convertToResponseMsgDto("401 Unauthorized Access", "Unauthorized Access"));
         }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(convertToResponseMsgDto("404 Not Found", "No users found"));
     }
 
     @Override
