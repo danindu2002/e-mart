@@ -25,6 +25,8 @@ public class ProductControllerImpl implements ProductController{
     @Autowired
     private ProductService productService;
     @Autowired
+    private RefCategoryRepo refCategoryRepo;
+    @Autowired
     private Utility utility;
 
 
